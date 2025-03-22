@@ -45,7 +45,7 @@ export default function FeedPage() {
 
           <div className="mb-8">
             <h1 className="text-2xl font-semibold text-gray-900">Feed de Pesquisas</h1>
-            <p className="text-gray-500">Descubra as últimas pesquisas e conecte-se com empresários</p>
+            <p className="text-gray-500">Descubra as últimas pesquisas</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-sm p-6 mb-8">

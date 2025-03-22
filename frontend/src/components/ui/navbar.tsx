@@ -22,14 +22,14 @@ export function Navbar() {
 
 
   const researcherLinks = [
-    { href: "/feed", label: "Feed", icon: Home },
+    { href: "/feed-pesquisador", label: "Feed", icon: Home },
     { href: "/messages", label: "Mensagens", icon: MessageSquare },
     { href: "/transactions", label: "Transações", icon: Wallet },
     { href: "/profile", label: "Perfil", icon: User },
   ];
 
   const entrepreneurLinks = [
-    { href: "/feed", label: "Feed", icon: Home },
+    { href: "/feed-empresarios", label: "Feed", icon: Home },
     { href: "/researchers", label: "Pesquisadores", icon: Users },
     { href: "/transactions", label: "Transações", icon: Wallet },
     { href: "/dashboard", label: "Dashboard", icon: BarChart },
