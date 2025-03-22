@@ -51,8 +51,8 @@ export default function FeedPage() {
           <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-medium text-gray-900">Postagens Recentes</h2>
-              <Link to="/articles/create-post">
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+              <Link to="/create-post">
+                <Button  className="bg-blue-600 hover:bg-blue-700 text-white">
                   Nova Postagem
                 </Button>
               </Link>

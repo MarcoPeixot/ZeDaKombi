@@ -120,10 +120,6 @@ export function Navbar() {
               </div>
             )}
 
-            {/* Avatar */}
-            <div className="h-9 w-9 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-semibold">
-              JD
-            </div>
           </div>
         </nav>
       </div>
