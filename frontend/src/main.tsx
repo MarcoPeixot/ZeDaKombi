@@ -8,6 +8,7 @@ import Feed from "./pages/feed"
 import SubmitArticlePage from "./pages/articles/submit"
 import CreatePostPage from "./pages/articles/create-post"
 import TransactionsPage from "./pages/transactions"
+import MessagesPage from "./pages/messages"
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -19,6 +20,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           <Route path="/submit" element={<SubmitArticlePage />} />
           <Route path="/create-post" element={<CreatePostPage />} />
           <Route path="/transactions" element={<TransactionsPage/>}/>
+          <Route path="/messages" element={<MessagesPage/>}/>
         </Routes>
       </BrowserRouter>
     </UserProvider>
