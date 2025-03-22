@@ -1,9 +1,4 @@
-from .Familia_model import Familia
-from .Beneficiario_model import Beneficiario
-from .Ong_model import Ong
-from .Recurso import Recurso
-from .DistribuicaoRecurso import DistribuicaoRecurso
-from .EstoqueRecurso import EstoqueRecurso
-from .Campanha_model import Campanha
+from .User_model import User
+from .Message_model import Message
 
-__all__ = ["Familia", "Beneficiario", "Ong", "Recurso", "EstoqueRecurso", "DistribuicaoRecurso", "Campanha"]
+__all__ = ["User", "Message"]

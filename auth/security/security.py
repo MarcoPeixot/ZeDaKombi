@@ -1,27 +1,22 @@
 # security.py
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import Optional, List
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
-from models.Ong_model import Ong
+from models.User_model import User  # Alterado para o novo modelo
 from db import get_db
 import os
 from dotenv import load_dotenv
-from typing import List
 
 # Carrega variáveis do .env
 load_dotenv()
 
-# Configurações (use variáveis de ambiente na produção!)
-SECRET_KEY = os.getenv(
-    "SECRET_KEY"
-)
-ALGORITHM = os.getenv(
-    "ALGORITHM"
-)
+# Configurações
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = os.getenv("ALGORITHM")
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -36,10 +31,10 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-async def get_current_ong(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
+async def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
+        detail="Credenciais inválidas",
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
@@ -47,31 +42,35 @@ async def get_current_ong(db: Session = Depends(get_db), token: str = Depends(oa
         email: str = payload.get("sub")
         if email is None:
             raise credentials_exception
-        tipo: str = payload.get("tipo")
     except JWTError:
         raise credentials_exception
     
-    ong = db.query(Ong).filter(Ong.email == email).first()
-    if ong is None:
+    user = db.query(User).filter(User.email == email).first()
+    if user is None:
         raise credentials_exception
-    return ong
+    return user
 
-def get_current_master_ong(current_ong: Ong = Depends(get_current_ong)):
-    if current_ong.tipo != "master":
-        raise HTTPException(status_code=403, detail="Acesso permitido apenas para ONGs master")
-    return current_ong
-
-def get_current_filial_ong(current_ong: Ong = Depends(get_current_ong)):
-    if current_ong.tipo != "filial":
-        raise HTTPException(status_code=403, detail="Acesso permitido apenas para ONGs filiais")
-    return current_ong
-
-def required_roles(required_roles: List[str]):
-    def role_checker(current_ong: Ong = Depends(get_current_ong)):
-        if current_ong.tipo not in required_roles:
+# Funções de verificação de role
+def require_role(required_role: str):
+    def role_checker(current_user: User = Depends(get_current_user)):
+        if current_user.role != required_role:
             raise HTTPException(
-                status_code=403,
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Acesso restrito a {required_role}s"
+            )
+        return current_user
+    return role_checker
+
+def require_any_role(required_roles: List[str]):
+    def role_checker(current_user: User = Depends(get_current_user)):
+        if current_user.role not in required_roles:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
                 detail=f"Acesso requerido: {', '.join(required_roles)}"
             )
-        return current_ong
+        return current_user
     return role_checker
+
+# Dependências específicas (opcional, mas útil)
+get_current_pesquisador = require_role("pesquisador")
+get_current_empresario = require_role("empresario")
