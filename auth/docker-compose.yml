@@ -1,0 +1,27 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: dockerfile.dev
+    volumes:
+      - .:/app  # Monta o código local no contêiner
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=mssql+pyodbc://ong-admin:Adm-project@ong-project-db-server.database.windows.net:1433/ong-db?driver=ODBC+Driver+18+for+SQL+Server&Encrypt=yes&TrustServerCertificate=no&ConnectionTimeout=30
+    # depends_on:
+    #   - db
+
+#   db:
+#     image: mcr.microsoft.com/mssql/server:2022-latest
+#     container_name: dev-db
+#     environment:
+#       SA_PASSWORD: "YourStrong!Passw0rd"
+#       ACCEPT_EULA: "Y"
+#     ports:
+#       - "1433:1433"
+#     volumes:
+#       - sqlserver_data:/var/opt/mssql  # Persistência de dados
+
+# volumes:
+#   sqlserver_data:
