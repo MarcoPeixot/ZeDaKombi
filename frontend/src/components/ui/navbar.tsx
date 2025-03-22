@@ -30,7 +30,7 @@ export function Navbar() {
 
   const entrepreneurLinks = [
     { href: "/feed-empresarios", label: "Feed", icon: Home },
-    { href: "/researchers", label: "Pesquisadores", icon: Users },
+    { href: "/research", label: "Pesquisadores", icon: Users },
     { href: "/transactions", label: "Transações", icon: Wallet },
     { href: "/dashboard", label: "Dashboard", icon: BarChart },
     { href: "/profile", label: "Perfil", icon: User },
