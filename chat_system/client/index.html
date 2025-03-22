@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat Client</title>
+  <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+</head>
+<body>
+  <h1>Chat Client</h1>
+  <input type="text" id="userId" placeholder="Seu ID" />
+  <input type="text" id="recipientId" placeholder="ID do destinatário" />
+  <textarea id="message" placeholder="Digite sua mensagem"></textarea>
+  <button id="sendMessageButton">Enviar Mensagem</button>
+
+  <script>
+    // Conectar ao servidor WebSocket
+    const socket = io('http://localhost:3001'); // Endereço do servidor WebSocket
+
+    // Registrar o usuário
+        function registerUser(userId) {
+        const userIdNumber = parseInt(userId, 10);  // Converte para número
+        if (!isNaN(userIdNumber)) {
+            // Envia apenas o userIdNumber diretamente, sem envolver em um objeto
+            socket.emit('registerUser', userIdNumber);  // Envia o ID diretamente
+            console.log(`Usuário registrado com ID ${userIdNumber}`);
+        } else {
+            alert('Por favor, insira um ID válido.');
+        }
+        }
+
+    // Enviar mensagem para outro usuário
+    function sendMessage(fromUserId, toUserId, message) {
+      socket.emit('sendMessage', { fromUserId, toUserId, message });
+      console.log(`Mensagem enviada de ${fromUserId} para ${toUserId}: ${message}`);
+    }
+
+    // Ouvir mensagens recebidas
+    socket.on('message', (data) => {
+      console.log('Mensagem recebida:', data);
+      alert(`Mensagem recebida: ${data.message}`);
+    });
+
+    // Lógica de envio de mensagem
+    document.getElementById('sendMessageButton').addEventListener('click', () => {
+      const fromUserId = document.getElementById('userId').value;
+      const recipientUserId = document.getElementById('recipientId').value;
+      const message = document.getElementById('message').value;
+      
+      if (fromUserId && recipientUserId && message) {
+        // Convertendo os IDs de usuário para números antes de enviar
+        const fromUserIdNumber = parseInt(fromUserId, 10);
+        const recipientUserIdNumber = parseInt(recipientUserId, 10);
+
+        if (!isNaN(fromUserIdNumber) && !isNaN(recipientUserIdNumber)) {
+          sendMessage(fromUserIdNumber, recipientUserIdNumber, message);
+          console.log(`Mensagem enviada de ${fromUserIdNumber} para ${recipientUserIdNumber}: ${message}`);
+        } else {
+          alert('Por favor, insira IDs válidos.');
+        }
+      } else {
+        alert('Por favor, preencha todos os campos.');
+      }
+    });
+
+    // Registra o usuário com ID
+    const userId = prompt('Digite seu ID de usuário');
+    registerUser(userId);  // Registrar o usuário
+  </script>
+</body>
+</html>
