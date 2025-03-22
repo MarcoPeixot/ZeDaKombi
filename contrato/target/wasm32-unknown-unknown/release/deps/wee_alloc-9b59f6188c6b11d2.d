@@ -1,0 +1,11 @@
+/home/giova/ZeDaKombi/contrato/target/wasm32-unknown-unknown/release/deps/libwee_alloc-9b59f6188c6b11d2.rmeta: /home/giova/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wee_alloc-0.4.5/src/lib.rs /home/giova/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wee_alloc-0.4.5/src/extra_assert.rs /home/giova/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wee_alloc-0.4.5/src/const_init.rs /home/giova/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wee_alloc-0.4.5/src/neighbors.rs /home/giova/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wee_alloc-0.4.5/src/imp_wasm32.rs
+
+/home/giova/ZeDaKombi/contrato/target/wasm32-unknown-unknown/release/deps/libwee_alloc-9b59f6188c6b11d2.rlib: /home/giova/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wee_alloc-0.4.5/src/lib.rs /home/giova/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wee_alloc-0.4.5/src/extra_assert.rs /home/giova/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wee_alloc-0.4.5/src/const_init.rs /home/giova/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wee_alloc-0.4.5/src/neighbors.rs /home/giova/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wee_alloc-0.4.5/src/imp_wasm32.rs
+
+/home/giova/ZeDaKombi/contrato/target/wasm32-unknown-unknown/release/deps/wee_alloc-9b59f6188c6b11d2.d: /home/giova/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wee_alloc-0.4.5/src/lib.rs /home/giova/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wee_alloc-0.4.5/src/extra_assert.rs /home/giova/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wee_alloc-0.4.5/src/const_init.rs /home/giova/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wee_alloc-0.4.5/src/neighbors.rs /home/giova/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wee_alloc-0.4.5/src/imp_wasm32.rs
+
+/home/giova/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wee_alloc-0.4.5/src/lib.rs:
+/home/giova/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wee_alloc-0.4.5/src/extra_assert.rs:
+/home/giova/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wee_alloc-0.4.5/src/const_init.rs:
+/home/giova/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wee_alloc-0.4.5/src/neighbors.rs:
+/home/giova/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wee_alloc-0.4.5/src/imp_wasm32.rs:
