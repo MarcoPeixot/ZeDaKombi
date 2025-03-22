@@ -2,12 +2,12 @@ import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@nestjs/config';
 import { HelloModule } from './modules/hello/hello.module';
-import { DatabaseService } from './config/database.service';
 import { MongoDBModule } from './config/mongodb.module';
 import { AlunoModule } from './modules/aluno/aluno.module';
 import { DatabaseModule } from './config/database.module';
 import { ProfissionalModule } from './modules/profissional/profissional.module';
 import { EscolaModule } from './modules/escola/escola.module';
+import { ChatModule } from './modules/chat/chat.module';
 
 @Module({
   imports: [
@@ -20,6 +20,7 @@ import { EscolaModule } from './modules/escola/escola.module';
     EscolaModule,
     ProfissionalModule,
     HttpModule,
+    ChatModule,
   ],
 })
 export class AppModule {}

@@ -9,8 +9,8 @@ async function bootstrap() {
   const mongoDBService = app.get(MongoDBService);
 
   const config = new DocumentBuilder()
-    .setTitle('Centro Paula Souza API')
-    .setDescription('Esta API fornece uma série de endpoints que facilitam o processo de atendimento as necessidades dos alunos PCDs do CTPS.')
+    .setTitle('ZeDaZombi')
+    .setDescription('Chat.')
     .setVersion('1.0')
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
@@ -22,7 +22,7 @@ async function bootstrap() {
   await app.listen(process.env.PORT ?? 3000);
 
   app.enableCors({
-    origin: 'http://localhost:4200', // Permite apenas essa origem
+    origin: '*', // Permite apenas essa origem
     methods: 'GET,POST,PUT,DELETE',
     allowedHeaders: 'Content-Type,Authorization',
   });
