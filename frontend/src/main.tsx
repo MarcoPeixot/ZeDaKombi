@@ -11,6 +11,10 @@ import CreatePostPage from "./pages/articles/create-post"
 import TransactionsPage from "./pages/transactions"
 import MessagesPage from "./pages/messages"
 import ResearchersPage from "./pages/research"
+import ProfilePage from "./pages/profile/profile"
+import EditEntrepreneurProfilePage from "./pages/profile/edit/entrepreneur"
+import EditResearcherProfilePage from "./pages/profile/edit/research"
+import IPFSViewerPage from "./pages/ipfs-view"
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -25,6 +29,10 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           <Route path="/messages" element={<MessagesPage/>}/>
           <Route path="/feed-empresarios" element={<FeedEmpresarios/>}/>
           <Route path="/research" element={<ResearchersPage/>}/>
+          <Route path="/profile" element={<ProfilePage/>}/>
+          <Route path="profile/edit/researcher" element={<EditResearcherProfilePage/>}/>
+          <Route path="profile/edit/entrepreneur" element={<EditEntrepreneurProfilePage/>}/>
+          <Route path="ipfs-viewer" element={<IPFSViewerPage/>}/>
         </Routes>
       </BrowserRouter>
     </UserProvider>

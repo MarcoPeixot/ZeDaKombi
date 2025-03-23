@@ -32,7 +32,7 @@ export function Navbar() {
     { href: "/feed-empresarios", label: "Feed", icon: Home },
     { href: "/research", label: "Pesquisadores", icon: Users },
     { href: "/transactions", label: "Transações", icon: Wallet },
-    { href: "/dashboard", label: "Dashboard", icon: BarChart },
+    { href: "/messages", label: "Mensagens", icon: BarChart },
     { href: "/profile", label: "Perfil", icon: User },
   ];
 

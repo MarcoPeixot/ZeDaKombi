@@ -2,10 +2,11 @@ import { useState } from "react";
 import { Navbar } from "../components/ui/navbar";
 import { Button } from "../components/ui/button";
 import { Search, Send } from "lucide-react";
-
+import { useUser } from "../context/user-context"; // Importe o contexto
 
 export default function MessagesPage() {
   const [activeContact, setActiveContact] = useState(0);
+  const { userType } = useUser(); // Consuma o userType do contexto
 
   const contacts = [
     { id: 0, name: "Ricardo Pereira", company: "ABC Inovações", avatar: "RP", unread: 2 },
@@ -83,7 +84,7 @@ export default function MessagesPage() {
 
               {/* Mensagens */}
               <div className="flex-1 p-4 overflow-y-auto flex flex-col gap-4">
-              {messagesData[activeContact as keyof typeof messagesData]?.map((message) => (
+                {messagesData[activeContact as keyof typeof messagesData]?.map((message) => (
                   <div
                     key={message.id}
                     className={`max-w-[70%] p-3 rounded-2xl text-sm ${
@@ -104,13 +105,19 @@ export default function MessagesPage() {
                 ))}
               </div>
 
-              {/* Campo de nova mensagem */}
+              {/* Campo de nova mensagem e botão de negociação */}
               <div className="p-4 border-t flex gap-2 bg-muted/10">
                 <input
                   type="text"
                   placeholder="Digite sua mensagem..."
                   className="flex-1 px-4 py-3 border border-input rounded-full focus:outline-none focus:ring-2 focus:ring-blue-600"
                 />
+                {/* Exibe o botão de "Negociação" apenas para empresários */}
+                {userType === "entrepreneur" && (
+                  <Button variant="outline" className="rounded-full">
+                    Negociação
+                  </Button>
+                )}
                 <Button className="rounded-full h-12 w-12 p-0 bg-blue-600 text-white">
                   <Send className="h-5 w-5" />
                 </Button>
