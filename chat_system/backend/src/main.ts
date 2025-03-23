@@ -22,7 +22,7 @@ async function bootstrap() {
   SwaggerModule.setup('docs', app, documentFactory);
   // Ativa o filtro de erro globalmente
   app.useGlobalFilters(new GlobalExceptionFilter(mongoDBService));
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? 3000, '0.0.0.0');
   console.log(`Aplicação rodando na porta ${process.env.PORT ?? 3000}`);
 }
 bootstrap();
