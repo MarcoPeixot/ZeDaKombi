@@ -56,14 +56,12 @@ export function LoginForm() {
           window.location.origin +
           (data.role === "pesquisador" ? "/success-pesquisador" : "/success-empresario"),
         failureUrl: window.location.href,
-      });      
-  
-      const accounts = await wallet.getAccounts();
-      console.log("Carteira conectada:", accounts);
-    } catch (error) {
+      });
+      } catch (error) {
       console.error("Erro ao fazer login:", error);
     }
   };
+  
   
   
   const typeLabel =

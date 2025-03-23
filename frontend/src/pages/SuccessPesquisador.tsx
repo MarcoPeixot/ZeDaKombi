@@ -1,17 +1,31 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { initWalletSelector } from "../wallet-selector";
 
 export function SuccessPesquisador() {
-  const navigate = useNavigate();
-
   useEffect(() => {
-    const role = localStorage.getItem("role");
-    if (role === "pesquisador") {
-      navigate("/feed-pesquisador");
-    } else {
-      navigate("/");
-    }
+    const fetchWalletInfo = async () => {
+      try {
+        const { selector } = await initWalletSelector();
+        const wallet = await selector.wallet();
+        const accounts = await wallet.getAccounts();
+
+        if (accounts.length > 0) {
+          console.log("Conta NEAR conectada:", accounts[0].accountId);
+          console.log("Chave pública:", accounts[0].publicKey);
+        } else {
+          console.log("Nenhuma conta conectada.");
+        }
+      } catch (err) {
+        console.error("Erro ao recuperar dados da carteira:", err);
+      }
+    };
+
+    fetchWalletInfo();
   }, []);
 
-  return <p>Redirecionando para o Feed de Pesquisador...</p>;
+  return (
+    <div className="p-4">
+      <h1>Login com carteira concluído com sucesso!</h1>
+    </div>
+  );
 }

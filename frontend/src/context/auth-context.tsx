@@ -22,7 +22,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const login = (newToken: string, newRole: string) => {
     setToken(newToken);
     setRole(newRole);
+    localStorage.setItem("access_token", newToken);
+    localStorage.setItem("role", newRole);
   };
+  
 
   const logout = () => {
     setToken(null);
