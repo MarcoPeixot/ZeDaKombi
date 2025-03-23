@@ -11,6 +11,10 @@ from db import get_db
 import os
 from dotenv import load_dotenv
 
+from email.mime.text import MIMEText
+import smtplib
+import os
+
 # Carrega variáveis do .env
 load_dotenv()
 
@@ -70,6 +74,66 @@ def require_any_role(required_roles: List[str]):
             )
         return current_user
     return role_checker
+
+def get_password_reset_token(email: str, expires_delta: timedelta = None):
+    """Gera token JWT para redefinição de senha"""
+    if not expires_delta:
+        expires_delta = timedelta(hours=1)
+    
+    to_encode = {
+        "sub": email,
+        "reset": True,  # Identifica o propósito do token
+        "exp": datetime.utcnow() + expires_delta
+    }
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+def verify_password_reset_token(token: str):
+    """Verifica e retorna o email do token de redefinição"""
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        if payload.get("reset") is not True:
+            return None
+        email: str = payload.get("sub")
+        if email is None:
+            return None
+        return email
+    except JWTError:
+        return None
+
+def send_password_reset_email(email: str, token: str):
+    """Simula envio de email (implemente com seu serviço de email)"""
+    reset_link = f"https://seusite.com/redefinir-senha?token={token}"
+    
+    message = f"""
+    Olá,
+
+    Você solicitou a redefinição de senha. 
+    Clique no link abaixo para prosseguir:
+
+    {reset_link}
+
+    Este link expira em 1 hora.
+
+    Caso não tenha solicitado, ignore este email.
+    """
+    
+    # Configurações de email (exemplo para Gmail)
+    msg = MIMEText(message)
+    msg["Subject"] = "Redefinição de Senha"
+    msg["From"] = os.getenv("EMAIL_FROM")
+    msg["To"] = email
+
+    # Conexão com servidor SMTP
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+        server.login(
+            os.getenv("EMAIL_FROM"),
+            os.getenv("EMAIL_PASSWORD")
+        )
+        server.sendmail(
+            os.getenv("EMAIL_FROM"),
+            email,
+            msg.as_string()
+        )
 
 # Dependências específicas (opcional, mas útil)
 get_current_pesquisador = require_role("pesquisador")

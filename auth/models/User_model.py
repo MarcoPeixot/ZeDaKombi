@@ -18,7 +18,7 @@ class User(Base):
     name = mapped_column(String(255), nullable=False)
     email = mapped_column(String(255), unique=True, nullable=False)
     senha = mapped_column(String(255), nullable=False)
-    role = mapped_column(Enum(UserRole), nullable=False)
+    role = mapped_column(Enum(UserRole, create_constraint=False), nullable=False)
     created_at = mapped_column(TIMESTAMP, server_default='NOW()')
 
     # Relacionamento com string para evitar import

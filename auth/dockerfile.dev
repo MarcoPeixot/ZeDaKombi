@@ -1,40 +1,31 @@
-# Use a imagem oficial do Python
+# dockerfile.dev
 FROM python:latest
 
-# Defina o diretório de trabalho no contêiner
+# Define o diretório de trabalho
 WORKDIR /app
 
-# Instale dependências do sistema operacional necessárias para o mssql-tools e unixODBC
-RUN apt-get update && apt-get install -y \
-    curl \
-    apt-transport-https \
-    && curl https://packages.microsoft.com/keys/microsoft.asc | tee /etc/apt/trusted.gpg.d/microsoft.asc \
-    && curl https://packages.microsoft.com/config/ubuntu/22.04/prod.list | tee /etc/apt/sources.list.d/mssql-release.list \
-    && apt-get update \
-    && ACCEPT_EULA=Y apt-get install -y mssql-tools18 unixodbc-dev \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+# Instala o pacote python-dotenv para carregar variáveis
+RUN pip install python-dotenv
 
-# Adicione o caminho do mssql-tools ao PATH para facilitar o uso
-ENV PATH="$PATH:/opt/mssql-tools18/bin"
-ENV DATABASE_URL="mssql+pyodbc://SA:YourStrong!Passw0rd@db:1433/dev-db?driver=ODBC+Driver+18+for+SQL+Server&Encrypt=yes&TrustServerCertificate=yes&ConnectionTimeout=30"
-
-# Copie os arquivos de dependências e instale-os antes de mudar o usuário
+# Copia primeiro o .env e requirements.txt
+COPY .env .
 COPY requirements.txt .
 
-# Instale as dependências do Python **antes de trocar de usuário**
+# Instala dependências (mantenha o mirror se necessário)
 RUN pip install --no-cache-dir -r requirements.txt \
     --index-url https://pypi.tuna.tsinghua.edu.cn/simple \
     --trusted-host pypi.tuna.tsinghua.edu.cn
 
-# Criar e usar um usuário não-root para segurança **após a instalação das dependências**
-RUN useradd -m devuser
+# Cria usuário não-root
+RUN useradd -m devuser && \
+    chown -R devuser:devuser /app && \
+    chmod 644 /app/.env  # Garante permissão de leitura
+
 USER devuser
 
-# Copie o restante do código
+# Copia o restante dos arquivos
 COPY . .
 
-# Exponha a porta do FastAPI
-EXPOSE 8000
-
-# Comando de inicialização para ambiente de desenvolvimento
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+# Garante que o .env será carregado
+ENV PYTHONPATH=/app
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port 8000 --reload"]
