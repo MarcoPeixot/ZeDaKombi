@@ -1,32 +1,21 @@
-// context/user-context.tsx
-import React, { createContext, useContext, useState } from 'react';
+// user-context.tsx
+import { createContext, useContext, useState, useEffect } from "react";
 
-interface UserContextType {
-  userType: string | null;
-  setUserType: (userType: string) => void;
-}
-
-const UserContext = createContext<UserContextType | null>(null);
+const UserContext = createContext<any>(null);
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
-  const [userType, setUserType] = useState<string | null>(localStorage.getItem('userType'));
+  const [userType, setUserType] = useState<string | null>(null);
 
-  const updateUserType = (newUserType: string) => {
-    setUserType(newUserType);
-    localStorage.setItem('userType', newUserType);
-  };
+  useEffect(() => {
+    const storedType = localStorage.getItem("selectedType");
+    if (storedType) setUserType(storedType);
+  }, []);
 
   return (
-    <UserContext.Provider value={{ userType, setUserType: updateUserType }}>
+    <UserContext.Provider value={{ userType, setUserType }}>
       {children}
     </UserContext.Provider>
   );
 };
 
-export const useUser = () => {
-  const context = useContext(UserContext);
-  if (!context) {
-    throw new Error('useUser must be used within a UserProvider');
-  }
-  return context;
-};
+export const useUser = () => useContext(UserContext);

@@ -1,4 +1,3 @@
-// components/LoginForm.tsx
 import { useState } from "react";
 import { Button } from "../components/ui/button";
 import { Briefcase, Lock, User } from "lucide-react";
@@ -6,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/auth-context";
 import { useUser } from "../context/user-context";
 import { Link } from "react-router-dom";
+import { initWalletSelector } from "../wallet-selector";
 
 export function LoginForm() {
   const [step, setStep] = useState<"select-type" | "connect-wallet">("select-type");
@@ -13,8 +13,8 @@ export function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const { login, role } = useAuth(); // Use a role do contexto de autenticação
-  const { setUserType } = useUser(); // Adicione isso
+  const { login, role } = useAuth();
+  const { setUserType } = useUser();
 
   const handleSelectType = (type: "researcher" | "entrepreneur") => {
     setSelectedType(type);
@@ -23,46 +23,54 @@ export function LoginForm() {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch('http://localhost:8000/token', {
-        method: 'POST',
+      const response = await fetch("http://localhost:8000/token", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+          "Content-Type": "application/x-www-form-urlencoded",
         },
         body: new URLSearchParams({
           username: email,
           password: password,
         }),
       });
-
-      if (!response.ok) {
-        throw new Error('Login failed');
-      }
-
+  
+      if (!response.ok) throw new Error("Login failed");
       const data = await response.json();
-      console.log('Resposta do backend:', data); // Verifique se a role está presente
-      login(data.access_token, data.role); // Passa o token e a role para o contexto
-
-      // Atualize o UserContext com a role
+  
+      localStorage.setItem("access_token", data.access_token);
+      localStorage.setItem("role", data.role);
+      localStorage.setItem("selectedType", data.role);
+  
+      login(data.access_token, data.role);
       setUserType(data.role);
-
-      if (data.role === "pesquisador") {
-        navigate("/feed-pesquisador");
-      } else if (data.role === "empresario") {
-        navigate("/feed-empresarios");
-      }
+  
+      const { selector, modal } = await initWalletSelector();
+      modal.show(); // mostra o modal de seleção de carteira
+  
+      const wallet = await selector.wallet() as any;
+  
+      await wallet.signIn({
+        contractId: "contrato.giovanna-britto.testnet",
+        methodNames: [],
+        successUrl:
+          window.location.origin +
+          (data.role === "pesquisador" ? "/success-pesquisador" : "/success-empresario"),
+        failureUrl: window.location.href,
+      });      
+  
+      const accounts = await wallet.getAccounts();
+      console.log("Carteira conectada:", accounts);
     } catch (error) {
-      console.error('Login error:', error);
+      console.error("Erro ao fazer login:", error);
     }
   };
-
-  console.log(localStorage.getItem('role'));
-
-  // Defina o typeLabel com base na role do contexto
-  const typeLabel = role === "pesquisador" ? "pesquisador" : "empresario";
+  
+  
+  const typeLabel =
+    selectedType === "researcher" ? "pesquisador" : "empresário";
 
   return (
     <div className="bg-white p-8 sm:p-10 rounded-2xl shadow-xl max-w-md w-full text-center">
-      {/* Logo */}
       <div className="flex items-center justify-center mb-6">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -83,7 +91,8 @@ export function LoginForm() {
         <>
           <h1 className="text-2xl font-semibold mb-4">Bem-vindo à plataforma</h1>
           <p className="text-gray-600 mb-8">
-            A ponte entre a pesquisa científica e o mundo empresarial, utilizando blockchain para promover inovação e colaboração.
+            A ponte entre a pesquisa científica e o mundo empresarial, utilizando blockchain
+            para promover inovação e colaboração.
           </p>
 
           <div className="space-y-4 text-left">
