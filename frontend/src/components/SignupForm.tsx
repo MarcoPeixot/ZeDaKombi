@@ -1,64 +1,52 @@
-// components/LoginForm.tsx
+// src/components/SignupForm.tsx
 import { useState } from "react";
-import { Button } from "../components/ui/button";
-import { Briefcase, Lock, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/auth-context";
-import { useUser } from "../context/user-context";
-import { Link } from "react-router-dom";
+import { Button } from "./ui/button";
+import { User, Briefcase } from "lucide-react";
 
-export function LoginForm() {
-  const [step, setStep] = useState<"select-type" | "connect-wallet">("select-type");
+export function SignupForm() {
+  const [step, setStep] = useState<"select-type" | "register">("select-type");
   const [selectedType, setSelectedType] = useState<"researcher" | "entrepreneur" | null>(null);
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const { login, role } = useAuth(); // Use a role do contexto de autenticação
-  const { setUserType } = useUser(); // Adicione isso
 
   const handleSelectType = (type: "researcher" | "entrepreneur") => {
     setSelectedType(type);
-    setStep("connect-wallet");
+    setStep("register");
   };
 
-  const handleLogin = async () => {
+  const handleRegister = async () => {
     try {
-      const response = await fetch('http://localhost:8000/token', {
-        method: 'POST',
+      const response = await fetch("http://localhost:8000/registrar", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+          "Content-Type": "application/json",
         },
-        body: new URLSearchParams({
-          username: email,
-          password: password,
+        body: JSON.stringify({
+          name,
+          email,
+          senha: password, // Certifique-se de que o campo "senha" está correto
+          role: selectedType === "researcher" ? "pesquisador" : "empresario", // Certifique-se de que as roles estão corretas
         }),
       });
-
+  
       if (!response.ok) {
-        throw new Error('Login failed');
+        throw new Error("Erro ao cadastrar usuário");
       }
-
+  
       const data = await response.json();
-      console.log('Resposta do backend:', data); // Verifique se a role está presente
-      login(data.access_token, data.role); // Passa o token e a role para o contexto
-
-      // Atualize o UserContext com a role
-      setUserType(data.role);
-
-      if (data.role === "pesquisador") {
-        navigate("/feed-pesquisador");
-      } else if (data.role === "empresario") {
-        navigate("/feed-empresarios");
-      }
+      console.log("Usuário cadastrado com sucesso:", data);
+  
+      // Redireciona para a tela de login após o cadastro
+      navigate("/login");
     } catch (error) {
-      console.error('Login error:', error);
+      console.error("Erro no cadastro:", error);
     }
   };
 
-  console.log(localStorage.getItem('role'));
-
-  // Defina o typeLabel com base na role do contexto
-  const typeLabel = role === "pesquisador" ? "pesquisador" : "empresario";
+  const typeLabel = selectedType === "researcher" ? "Pesquisador" : "Empresário";
 
   return (
     <div className="bg-white p-8 sm:p-10 rounded-2xl shadow-xl max-w-md w-full text-center">
@@ -81,9 +69,9 @@ export function LoginForm() {
 
       {step === "select-type" ? (
         <>
-          <h1 className="text-2xl font-semibold mb-4">Bem-vindo à plataforma</h1>
+          <h1 className="text-2xl font-semibold mb-4">Crie sua conta</h1>
           <p className="text-gray-600 mb-8">
-            A ponte entre a pesquisa científica e o mundo empresarial, utilizando blockchain para promover inovação e colaboração.
+            Escolha o tipo de perfil que melhor descreve você.
           </p>
 
           <div className="space-y-4 text-left">
@@ -118,30 +106,38 @@ export function LoginForm() {
         </>
       ) : (
         <>
-          <h1 className="text-2xl font-semibold mb-4">Conectar como {typeLabel}</h1>
-          <p className="text-gray-600 mb-6">Conecte sua carteira NEAR para acessar a plataforma</p>
+          <h1 className="text-2xl font-semibold mb-4">Cadastro de {typeLabel}</h1>
+          <p className="text-gray-600 mb-6">Preencha os campos abaixo para criar sua conta.</p>
 
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-2 border rounded-lg mb-4"
-          />
-          <input
-            type="password"
-            placeholder="Senha"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-2 border rounded-lg mb-4"
-          />
+          <div className="space-y-4">
+            <input
+              type="text"
+              placeholder="Nome"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full p-2 border rounded-lg"
+            />
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full p-2 border rounded-lg"
+            />
+            <input
+              type="password"
+              placeholder="Senha"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full p-2 border rounded-lg"
+            />
+          </div>
 
           <Button
-            onClick={handleLogin}
-            className="w-full py-4 text-md font-medium flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
+            onClick={handleRegister}
+            className="w-full py-4 text-md font-medium flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg mt-6"
           >
-            <Lock className="h-5 w-5" />
-            Conectar
+            Cadastrar
           </Button>
 
           <button
@@ -154,17 +150,10 @@ export function LoginForm() {
       )}
 
       <p className="text-xs text-gray-500 mt-6">
-        Ao conectar, você concorda com nossos{" "}
+        Ao cadastrar, você concorda com nossos{" "}
         <a href="#" className="text-blue-600 hover:underline">
           Termos de Serviço
         </a>
-      </p>
-
-      <p className="text-sm text-gray-600 mt-4">
-        Não tem uma conta?{" "}
-        <Link to="/signup" className="text-blue-600 hover:underline">
-          Cadastre-se
-        </Link>
       </p>
     </div>
   );

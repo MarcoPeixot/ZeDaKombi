@@ -1,11 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navbar } from "../components/ui/navbar";
 import { Button } from "../components/ui/button";
 import { Search, Send } from "lucide-react";
-
+import { useUser } from "../context/user-context"; // Importe o contexto
+import io from 'socket.io-client';
 
 export default function MessagesPage() {
+  const { userType } = useUser(); // Consuma o userType do contexto
   const [activeContact, setActiveContact] = useState(0);
+  const [messages, setMessages] = useState({});
+  const [inputMessage, setInputMessage] = useState("");
+
+  const socket = io('http://localhost:3001'); // Conecta ao servidor WebSocket
 
   const contacts = [
     { id: 0, name: "Ricardo Pereira", company: "ABC Inovações", avatar: "RP", unread: 2 },
@@ -14,14 +20,49 @@ export default function MessagesPage() {
     { id: 3, name: "Mariana Costa", company: "Green Energy", avatar: "MC", unread: 0 },
   ];
 
-  const messagesData = {
-    0: [
-      { id: 1, sender: "them", text: "Olá João, vi seu artigo sobre blockchain e fiquei muito interessado na aplicação para nossa empresa.", time: "10:30" },
-      { id: 2, sender: "me", text: "Olá Ricardo, obrigado pelo interesse! Quais aspectos específicos chamaram sua atenção?", time: "10:35" },
-    ],
-    1: [
-      { id: 1, sender: "them", text: "Oi João, gostaria de marcar uma reunião sobre nosso projeto.", time: "14:00" },
-    ],
+  useEffect(() => {
+    // Registrar o usuário (exemplo com userId 1)
+    socket.emit('registerUser', 1);
+
+    // Ouvir mensagens recebidas
+    socket.on('message', (data) => {
+      const newMessage = {
+        id: Date.now(), // ID único para a mensagem
+        sender: data.fromUserId === 1 ? "me" : "them",
+        text: data.message,
+        time: new Date().toLocaleTimeString(),
+      };
+
+      setMessages((prevMessages) => ({
+        ...prevMessages,
+        [activeContact]: [...(prevMessages[activeContact] || []), newMessage],
+      }));
+    });
+
+    return () => {
+      socket.off('message');
+    };
+  }, [activeContact]);
+
+  const sendMessage = () => {
+    if (inputMessage.trim()) {
+      const toUserId = contacts[activeContact].id; // ID do destinatário
+      socket.emit('sendMessage', { fromUserId: 1, toUserId, message: inputMessage });
+
+      const newMessage = {
+        id: Date.now(),
+        sender: "me",
+        text: inputMessage,
+        time: new Date().toLocaleTimeString(),
+      };
+
+      setMessages((prevMessages) => ({
+        ...prevMessages,
+        [activeContact]: [...(prevMessages[activeContact] || []), newMessage],
+      }));
+
+      setInputMessage("");
+    }
   };
 
   return (
@@ -83,7 +124,7 @@ export default function MessagesPage() {
 
               {/* Mensagens */}
               <div className="flex-1 p-4 overflow-y-auto flex flex-col gap-4">
-              {messagesData[activeContact as keyof typeof messagesData]?.map((message) => (
+                {messages[activeContact]?.map((message) => (
                   <div
                     key={message.id}
                     className={`max-w-[70%] p-3 rounded-2xl text-sm ${
@@ -104,14 +145,22 @@ export default function MessagesPage() {
                 ))}
               </div>
 
-              {/* Campo de nova mensagem */}
+              {/* Campo de nova mensagem e botão de negociação */}
               <div className="p-4 border-t flex gap-2 bg-muted/10">
                 <input
                   type="text"
                   placeholder="Digite sua mensagem..."
                   className="flex-1 px-4 py-3 border border-input rounded-full focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  value={inputMessage}
+                  onChange={(e) => setInputMessage(e.target.value)}
                 />
-                <Button className="rounded-full h-12 w-12 p-0 bg-blue-600 text-white">
+                {/* Exibe o botão de "Negociação" apenas para empresários */}
+                {userType === "entrepreneur" && (
+                  <Button variant="outline" className="rounded-full">
+                    Negociação
+                  </Button>
+                )}
+                <Button className="rounded-full h-12 w-12 p-0 bg-blue-600 text-white" onClick={sendMessage}>
                   <Send className="h-5 w-5" />
                 </Button>
               </div>

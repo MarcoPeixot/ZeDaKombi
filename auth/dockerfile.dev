@@ -1,0 +1,31 @@
+# dockerfile.dev
+FROM python:latest
+
+# Define o diretório de trabalho
+WORKDIR /app
+
+# Instala o pacote python-dotenv para carregar variáveis
+RUN pip install python-dotenv
+
+# Copia primeiro o .env e requirements.txt
+COPY .env .
+COPY requirements.txt .
+
+# Instala dependências (mantenha o mirror se necessário)
+RUN pip install --no-cache-dir -r requirements.txt \
+    --index-url https://pypi.tuna.tsinghua.edu.cn/simple \
+    --trusted-host pypi.tuna.tsinghua.edu.cn
+
+# Cria usuário não-root
+RUN useradd -m devuser && \
+    chown -R devuser:devuser /app && \
+    chmod 644 /app/.env  # Garante permissão de leitura
+
+USER devuser
+
+# Copia o restante dos arquivos
+COPY . .
+
+# Garante que o .env será carregado
+ENV PYTHONPATH=/app
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port 8000 --reload"]

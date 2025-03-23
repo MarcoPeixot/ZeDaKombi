@@ -1,0 +1,31 @@
+# Use a imagem oficial do Python como base
+FROM python:latest
+
+# Defina o diretório de trabalho no contêiner
+WORKDIR /app
+
+# Copie todos os arquivos do diretório atual para o diretório de trabalho no contêiner
+COPY . .
+
+# Instale as dependências do sistema operacional necessárias para o mssql-tools e unixODBC
+RUN apt-get update && apt-get install -y \
+    curl \
+    apt-transport-https \
+    && curl https://packages.microsoft.com/keys/microsoft.asc | tee /etc/apt/trusted.gpg.d/microsoft.asc \
+    && curl https://packages.microsoft.com/config/ubuntu/22.04/prod.list | tee /etc/apt/sources.list.d/mssql-release.list \
+    && apt-get update \
+    && ACCEPT_EULA=Y apt-get install -y mssql-tools18 unixodbc-dev \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Adicione o caminho do mssql-tools ao PATH para facilitar o uso
+ENV PATH="$PATH:/opt/mssql-tools18/bin"
+
+# Instale as dependências do Python
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Exponha a porta em que o servidor FastAPI está sendo executado
+EXPOSE 8000
+
+# Comando para executar o servidor FastAPI quando o contêiner for iniciado
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+

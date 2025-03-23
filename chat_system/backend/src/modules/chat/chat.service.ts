@@ -17,10 +17,7 @@ export class ChatService {
   // Buscar todas as mensagens
   async getMessages(): Promise<any[]> {
     const query = `
-      SELECT m.id, m.message, m.created_at, u.name AS user_name, u.role AS user_role
-      FROM messages m
-      JOIN users u ON m.user_id = u.id
-      ORDER BY m.created_at DESC
+      SELECT * FROM messages
     `;
     const result = await this.databaseService.query(query);
     return result.rows;
