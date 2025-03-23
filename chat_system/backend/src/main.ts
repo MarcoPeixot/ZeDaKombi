@@ -8,6 +8,14 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const mongoDBService = app.get(MongoDBService);
 
+  // Configurar CORS ANTES de iniciar o servidor
+  app.enableCors({
+    origin: '*', // Permite todas as origens em ambiente de desenvolvimento
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: 'Content-Type,Authorization',
+    credentials: true,
+  });
+
   const config = new DocumentBuilder()
     .setTitle('ZeDaZombi')
     .setDescription('Chat.')
@@ -16,15 +24,10 @@ async function bootstrap() {
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, documentFactory);
 
-  //Ativa o filtro de erro globalmente
+  // Ativa o filtro de erro globalmente
   app.useGlobalFilters(new GlobalExceptionFilter(mongoDBService));
 
   await app.listen(process.env.PORT ?? 3000);
-
-  app.enableCors({
-    origin: '*', // Permite apenas essa origem
-    methods: 'GET,POST,PUT,DELETE',
-    allowedHeaders: 'Content-Type,Authorization',
-  });
+  console.log(`Aplicação rodando na porta ${process.env.PORT ?? 3000}`);
 }
 bootstrap();
