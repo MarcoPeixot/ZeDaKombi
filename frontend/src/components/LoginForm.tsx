@@ -16,9 +16,14 @@ export function LoginForm() {
   }
 
   const handleConnectWallet = () => {
-    if (selectedType) {
+    if (selectedType == "researcher") {
       setUserType(selectedType)
-      navigate("/feed")
+      navigate("/feed-pesquisador")
+    }
+
+    if (selectedType == "entrepreneur") {
+      setUserType(selectedType)
+      navigate("/feed-empresarios")
     }
   }
 
