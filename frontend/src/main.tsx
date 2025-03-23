@@ -18,6 +18,7 @@ import EditEntrepreneurProfilePage from "./pages/profile/edit/entrepreneur";
 import EditResearcherProfilePage from "./pages/profile/edit/research";
 import IPFSViewerPage from "./pages/ipfs-view";
 import { ProtectedRoute } from "./components/ProtectRoutes";
+import UserListPage from "./pages/list";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -67,6 +68,14 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
               element={
                 <ProtectedRoute>
                   <MessagesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/lista"
+              element={
+                <ProtectedRoute>
+                  <UserListPage />
                 </ProtectedRoute>
               }
             />

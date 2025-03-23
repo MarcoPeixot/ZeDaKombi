@@ -26,7 +26,7 @@ export function Navbar() {
 
   const researcherLinks = [
     { href: "/feed-pesquisador", label: "Feed", icon: Home },
-    { href: "/messages", label: "Mensagens", icon: MessageSquare },
+    { href: "/lista", label: "Mensagens", icon: MessageSquare },
     { href: "/transactions", label: "Transações", icon: Wallet },
     { href: "/profile", label: "Perfil", icon: User },
   ];
@@ -35,7 +35,7 @@ export function Navbar() {
     { href: "/feed-empresarios", label: "Feed", icon: Home },
     { href: "/research", label: "Pesquisadores", icon: Users },
     { href: "/transactions", label: "Transações", icon: Wallet },
-    { href: "/messages", label: "Mensagens", icon: BarChart },
+    { href: "/lista", label: "Mensagens", icon: BarChart },
     { href: "/profile", label: "Perfil", icon: User },
   ];
 
