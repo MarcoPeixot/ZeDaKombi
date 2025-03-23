@@ -33,18 +33,28 @@ export function LoginForm() {
           password: password,
         }),
       });
-
+  
       if (!response.ok) {
         throw new Error('Login failed');
       }
-
+  
       const data = await response.json();
-      console.log('Resposta do backend:', data); // Verifique se a role está presente
-      login(data.access_token, data.role); // Passa o token e a role para o contexto
-
-      // Atualize o UserContext com a role
+      console.log('Resposta do backend:', data);
+      
+      // Armazenar o token e a role
+      login(data.access_token, data.role);
+      
+      // Adicione esta parte para armazenar o ID do usuário
+      // Suponha que o backend retorne o ID do usuário
+      // Se não estiver disponível na resposta, você pode usar um ID temporário para testes
+      const userId = data.user_id || Math.floor(Math.random() * 100) + 1; // ID aleatório para teste
+      localStorage.setItem('userId', userId.toString());
+      console.log(`ID do usuário armazenado: ${userId}`);
+      
+      // Atualizar o UserContext com a role
       setUserType(data.role);
-
+  
+      // Redirecionar com base na role
       if (data.role === "pesquisador") {
         navigate("/feed-pesquisador");
       } else if (data.role === "empresario") {
