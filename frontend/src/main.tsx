@@ -18,17 +18,22 @@ import EditEntrepreneurProfilePage from "./pages/profile/edit/entrepreneur";
 import EditResearcherProfilePage from "./pages/profile/edit/research";
 import IPFSViewerPage from "./pages/ipfs-view";
 import { ProtectedRoute } from "./components/ProtectRoutes";
+import { SuccessPesquisador } from "./pages/SuccessPesquisador";
+import { SuccessEmpresario } from "./pages/SucessesEmpresario";
+import { RedirectOnRole } from "../src/RedirectOneRole";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <AuthProvider>
       <UserProvider>
         <BrowserRouter>
+        <RedirectOnRole />
           <Routes>
             <Route path="/" element={<LoginPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupForm />} />
-
+            <Route path="/success-pesquisador" element={<SuccessPesquisador />} />
+            <Route path="/success-empresario" element={<SuccessEmpresario />} />
             {/* Rotas protegidas */}
             <Route
               path="/feed-pesquisador"
