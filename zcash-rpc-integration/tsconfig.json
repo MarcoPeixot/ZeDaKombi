@@ -1,0 +1,24 @@
+// tsconfig.json
+{
+  "compilerOptions": {
+    // Define a versão de JavaScript alvo (ES2020 ou superior).
+    "target": "ES2020",
+
+    // Define que o TypeScript vai gerar código em formato ES Modules.
+    "module": "ES2020",
+
+    // Diretório de saída para os arquivos compilados.
+    "outDir": "./dist",
+
+    // Se seus arquivos .ts estão na raiz do projeto, mantenha rootDir como ".".
+    // Se estiverem em uma pasta "src", coloque "./src".
+    "rootDir": ".",
+
+    "strict": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules"]
+}
