@@ -2,6 +2,8 @@ from nearai.agents.environment import Environment
 
 # The agent can access the messages in the current thread using env.list_messages().
 
+# from pynear.account import Account // library for interact with near blockchain
+
 
 def run(env: Environment):
     # Your agent code here
