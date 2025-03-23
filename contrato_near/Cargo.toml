@@ -1,0 +1,23 @@
+[package]
+name = "contrato_near"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+near-sdk = "4.1.1"
+borsh = "0.9.3"
+serde = { version = "1", features = ["derive"] }
+
+[patch.crates-io]
+parity-secp256k1 = { git = "https://github.com/paritytech/rust-secp256k1"}
+
+[profile.release]
+codegen-units = 1
+opt-level = "z"
+lto = true
+debug = false
+panic = "abort"
+overflow-checks = true
