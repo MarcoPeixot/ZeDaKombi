@@ -92,11 +92,7 @@ export default function FeedPage() {
                       <span>{post.likes}</span>
                     </button>
 
-                    <button className="flex items-center gap-1 hover:text-blue-600 transition">
-                      <MessageSquare className="h-4 w-4" />
-                      <span>{post.comments} comentários</span>
-                    </button>
-
+                    
                     {post.hasArticle ? (
                       <Link
                         to="/ipfs-viewer"

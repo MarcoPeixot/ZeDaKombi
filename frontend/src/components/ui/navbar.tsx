@@ -18,7 +18,10 @@ export function Navbar() {
   const location = useLocation();
   const { userType } = useUser();
 
+
   const [isArticleDropdownOpen, setArticleDropdownOpen] = useState(false);
+
+  console.log('UserType na Navbar:', userType);
 
 
   const researcherLinks = [
@@ -30,13 +33,13 @@ export function Navbar() {
 
   const entrepreneurLinks = [
     { href: "/feed-empresarios", label: "Feed", icon: Home },
-    { href: "/researchers", label: "Pesquisadores", icon: Users },
+    { href: "/research", label: "Pesquisadores", icon: Users },
     { href: "/transactions", label: "Transações", icon: Wallet },
-    { href: "/dashboard", label: "Dashboard", icon: BarChart },
+    { href: "/messages", label: "Mensagens", icon: BarChart },
     { href: "/profile", label: "Perfil", icon: User },
   ];
 
-  const links = userType === "entrepreneur" ? entrepreneurLinks : researcherLinks;
+  const links = userType === "empresario" ? entrepreneurLinks : researcherLinks;
 
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -63,7 +66,7 @@ export function Navbar() {
             <span>NexusR</span>
             {userType && (
               <span className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full ml-2 capitalize">
-                {userType === "researcher" ? "Pesquisador" : "Empresário"}
+                {userType === "pesquisador" ? "pesquisador" : "Empresário"}
               </span>
             )}
           </div>
@@ -84,7 +87,7 @@ export function Navbar() {
             ))}
 
             {/* Artigos Dropdown com atraso */}
-            {userType === "researcher" && (
+            {userType === "pesquisador" && (
               <div
                 className="relative"
                 onMouseEnter={handleMouseEnter}

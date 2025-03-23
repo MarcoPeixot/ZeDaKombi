@@ -1,26 +1,32 @@
-import { createContext, useContext, useState, ReactNode } from "react"
+// context/user-context.tsx
+import React, { createContext, useContext, useState } from 'react';
 
-type UserType = "researcher" | "entrepreneur" | null
-
-interface UserContextProps {
-  userType: UserType
-  setUserType: (type: UserType) => void
+interface UserContextType {
+  userType: string | null;
+  setUserType: (userType: string) => void;
 }
 
-const UserContext = createContext<UserContextProps | undefined>(undefined)
+const UserContext = createContext<UserContextType | null>(null);
 
-export function UserProvider({ children }: { children: ReactNode }) {
-  const [userType, setUserType] = useState<UserType>(null)
+export const UserProvider = ({ children }: { children: React.ReactNode }) => {
+  const [userType, setUserType] = useState<string | null>(localStorage.getItem('userType'));
+
+  const updateUserType = (newUserType: string) => {
+    setUserType(newUserType);
+    localStorage.setItem('userType', newUserType);
+  };
 
   return (
-    <UserContext.Provider value={{ userType, setUserType }}>
+    <UserContext.Provider value={{ userType, setUserType: updateUserType }}>
       {children}
     </UserContext.Provider>
-  )
-}
+  );
+};
 
-export function useUser() {
-  const context = useContext(UserContext)
-  if (!context) throw new Error("useUser deve estar dentro de um UserProvider")
-  return context
-}
+export const useUser = () => {
+  const context = useContext(UserContext);
+  if (!context) {
+    throw new Error('useUser must be used within a UserProvider');
+  }
+  return context;
+};
