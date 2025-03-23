@@ -1,7 +1,5 @@
 import { Test } from '@nestjs/testing';
 import { AppModule } from './app.module';
-import { ConfigModule } from '@nestjs/config';
-import { HelloModule } from './modules/hello/hello.module';
 import { DatabaseService } from './config/database.service';
 import { MongoDBModule } from './config/mongodb.module';
 
@@ -24,14 +22,6 @@ describe('AppModule', () => {
   // Teste para verificar se o AppModule foi definido corretamente
   it('should be defined', () => {
     expect(appModule).toBeDefined();
-  });
-
-  // Teste para verificar se o AppModule importa o HelloModule
-  it('should import HelloModule', async () => {
-    // Recupera os metadados dos imports definidos pelo AppModule
-    const imports = Reflect.getMetadata('imports', AppModule);
-    // Verifica se HelloModule está presente entre os imports
-    expect(imports.includes(HelloModule)).toBe(true);
   });
 
   // Teste para verificar se o AppModule importa o MongoDBModule
