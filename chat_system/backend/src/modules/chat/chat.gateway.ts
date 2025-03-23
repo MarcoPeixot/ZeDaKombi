@@ -47,8 +47,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   // Enviar uma mensagem para um usuário específico
   @SubscribeMessage('sendMessage')
   async handleMessage(@MessageBody() data: { fromUserId: number, toUserId: number, message: string }) {
-    // Chama o serviço para salvar a mensagem no banco de dados
-    await this.chatService.sendMessage(data.fromUserId, data.message);
+    // Supondo que o chat_id seja 2, conforme mencionado
+    const chatId = 2;
+    
+    // Chama o serviço para salvar a mensagem no banco de dados associada ao chat_id
+    await this.chatService.sendMessage(chatId, data.fromUserId, data.message);
 
     // Verifica se o destinatário está conectado
     const recipientSocketId = [...this.users.entries()].find(([_, id]) => id === data.toUserId)?.[0];

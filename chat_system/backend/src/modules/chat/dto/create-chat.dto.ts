@@ -3,11 +3,18 @@ import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateChatDto {
   @ApiProperty({
-    description: 'ID do usuário que envia a mensagem',
+    description: 'ID do chat',
     example: 1,
   })
   @IsNotEmpty()
-  senderId: number;
+  chatId: number;
+
+  @ApiProperty({
+    description: 'ID do usuário que esta enviando mensagem',
+    example: 1,
+  })
+  @IsNotEmpty()
+  userId: number;
 
   @ApiProperty({
     description: 'Conteúdo da mensagem',

@@ -62,8 +62,6 @@ export function LoginForm() {
     }
   };
   
-  
-  
   const typeLabel =
     selectedType === "researcher" ? "pesquisador" : "empresário";
 
