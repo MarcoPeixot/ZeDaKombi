@@ -3,8 +3,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
 import { User, Briefcase } from "lucide-react";
+import { useNearWallet } from "../hooks/useNearWallets"; 
+
 
 export function SignupForm() {
+  const { connect, getAccountId } = useNearWallet();
   const [step, setStep] = useState<"select-type" | "register">("select-type");
   const [selectedType, setSelectedType] = useState<"researcher" | "entrepreneur" | null>(null);
   const [name, setName] = useState("");
@@ -21,31 +24,54 @@ export function SignupForm() {
     try {
       const response = await fetch("http://localhost:8000/registrar", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name,
           email,
-          senha: password, // Certifique-se de que o campo "senha" está correto
-          role: selectedType === "researcher" ? "pesquisador" : "empresario", // Certifique-se de que as roles estão corretas
+          senha: password,
+          role: selectedType === "researcher" ? "pesquisador" : "empresario",
         }),
       });
   
       if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Erro da API:", errorData);
         throw new Error("Erro ao cadastrar usuário");
       }
   
       const data = await response.json();
-      console.log("Usuário cadastrado com sucesso:", data);
+      const userId = data.user_id;
+      localStorage.setItem("user_id", userId.toString());
+      localStorage.setItem("selectedType", selectedType || "");
   
-      // Redireciona para a tela de login após o cadastro
-      navigate("/login");
+      // 👉 conecta carteira NEAR
+      await connect();
+  
+      // Após conexão manual do usuário
+      const interval = setInterval(async () => {
+        const nearAccountId = getAccountId();
+        if (nearAccountId) {
+          clearInterval(interval);
+  
+          // 🔁 Registra a carteira no backend
+          await fetch("http://localhost:8000/registrar-carteira", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              user_id: userId,
+              near_wallet: nearAccountId,
+              zec_wallet: "", // Aqui pode vir um campo opcional depois
+            }),
+          });
+  
+          navigate("/registro-sucesso");
+        }
+      }, 1000);
     } catch (error) {
       console.error("Erro no cadastro:", error);
     }
   };
-
+  
   const typeLabel = selectedType === "researcher" ? "Pesquisador" : "Empresário";
 
   return (

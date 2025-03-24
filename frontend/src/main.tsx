@@ -18,6 +18,12 @@ import EditEntrepreneurProfilePage from "./pages/profile/edit/entrepreneur";
 import EditResearcherProfilePage from "./pages/profile/edit/research";
 import IPFSViewerPage from "./pages/ipfs-view";
 import { ProtectedRoute } from "./components/ProtectRoutes";
+import RegistroSucesso from "../src/pages/RegistroSucesso";
+//import { NearProvider } from "./context/NearContext";
+
+if (typeof global === "undefined") {
+  (window as any).global = window;
+}
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -28,7 +34,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
             <Route path="/" element={<LoginPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupForm />} />
-
+            <Route path="/registro-sucesso" element={<RegistroSucesso />} />
             {/* Rotas protegidas */}
             <Route
               path="/feed-pesquisador"
