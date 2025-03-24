@@ -15,6 +15,7 @@
     "clsx": "^2.1.1",
     "ethers": "^6.13.5",
     "lucide-react": "^0.483.0",
+    "near-api-js": "^5.1.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.4.0",
