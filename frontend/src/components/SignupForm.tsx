@@ -46,7 +46,7 @@ export function SignupForm() {
       localStorage.setItem("selectedType", selectedType || "");
       console.log("✅ Usuário cadastrado com ID:", userId);
   
-      // Inicia a conexão com a carteira NEAR (abrindo o modal)
+      // Inicia a conexão com a carteira NEAR (abre o modal)
       await connect();
   
     } catch (error) {
@@ -54,41 +54,14 @@ export function SignupForm() {
     }
   };
 
-  // Efeito que monitora o accountId e, quando definido, envia-o para o backend e redireciona
+  // Ao detectar o accountId (carteira conectada), redireciona para a tela de RegistroSucesso
   useEffect(() => {
     if (accountId) {
       console.log("✅ Carteira NEAR conectada:", accountId);
       localStorage.setItem("near_wallet", accountId);
-      const userId = localStorage.getItem("user_id");
-      if (userId) {
-        fetch("http://localhost:8000/registrar-carteira", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            user_id: userId,
-            near_wallet: accountId,
-            zec_wallet: "",
-          }),
-        })
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error("Falha ao registrar carteira");
-            }
-            return response.json();
-          })
-          .then((data) => {
-            console.log("✅ Carteira registrada no banco:", data);
-            // Redireciona para o feed de acordo com o perfil
-            if (selectedType === "researcher") {
-              navigate("/feed-pesquisador");
-            } else {
-              navigate("/feed-empresarios");
-            }
-          })
-          .catch((error) => console.error("Erro ao registrar carteira:", error));
-      }
+      navigate("/registro-sucesso");
     }
-  }, [accountId, navigate, selectedType]);
+  }, [accountId, navigate]);
 
   const typeLabel = selectedType === "researcher" ? "Pesquisador" : "Empresário";
 
