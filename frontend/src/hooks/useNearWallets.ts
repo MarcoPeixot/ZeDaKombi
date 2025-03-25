@@ -7,6 +7,7 @@ import "@near-wallet-selector/modal-ui/styles.css";
 
 export function useNearWallet() {
   const [selector, setSelector] = useState<any>(null);
+  const [accountId, setAccountId] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -20,6 +21,21 @@ export function useNearWallet() {
       });
 
       setSelector(selector);
+
+      // Verifica se já existe uma conta conectada inicialmente
+      const initialState = selector.store.getState();
+      if (initialState.accounts && initialState.accounts.length > 0) {
+        setAccountId(initialState.accounts[0].accountId);
+      }
+
+      // Se o método "on" estiver disponível, use-o para ouvir mudanças nas contas
+      if (typeof selector.on === "function") {
+        selector.on("accountsChanged", (accounts: any) => {
+          if (accounts && accounts.length > 0) {
+            setAccountId(accounts[0].accountId);
+          }
+        });
+      }
     })();
   }, []);
 
@@ -32,10 +48,5 @@ export function useNearWallet() {
     }
   };
 
-  const getAccountId = () => {
-    const accounts = selector?.store.getState().accounts;
-    return accounts?.[0]?.accountId || null;
-  };
-
-  return { connect, getAccountId };
+  return { connect, accountId };
 }

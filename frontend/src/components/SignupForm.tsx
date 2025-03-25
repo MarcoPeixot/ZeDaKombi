@@ -1,12 +1,12 @@
-
-import { useState } from "react";
+// components/SignupForm.tsx
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
 import { User, Briefcase } from "lucide-react";
-import { useNearWallet } from "../hooks/useNearWallets"; 
+import { useNearWallet } from "../hooks/useNearWallets";
 
 export function SignupForm() {
-  const { connect, getAccountId } = useNearWallet();
+  const { connect, accountId } = useNearWallet();
   const [step, setStep] = useState<"select-type" | "register">("select-type");
   const [selectedType, setSelectedType] = useState<"researcher" | "entrepreneur" | null>(null);
   const [name, setName] = useState("");
@@ -46,49 +46,50 @@ export function SignupForm() {
       localStorage.setItem("selectedType", selectedType || "");
       console.log("✅ Usuário cadastrado com ID:", userId);
   
-      // 👉 conecta carteira NEAR
+      // Inicia a conexão com a carteira NEAR (abrindo o modal)
       await connect();
-      console.log("⏳ Conectando carteira...");
-  
-      // Aguardar conexão da carteira (versão com verificação direta)
-      let attempts = 0;
-      const maxAttempts = 10;
-      const delay = 1000;
-  
-      const checkWallet = async () => {
-        const nearAccountId = getAccountId();
-        console.log("🔍 Tentativa", attempts + 1, "- Carteira:", nearAccountId);
-        if (nearAccountId) {
-          // Sucesso
-          console.log("✅ Carteira NEAR conectada:", nearAccountId);
-          localStorage.setItem("near_wallet", nearAccountId);
-  
-          await fetch("http://localhost:8000/registrar-carteira", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              user_id: userId,
-              near_wallet: nearAccountId,
-              zec_wallet: "",
-            }),
-          });
-  
-          navigate("/registro-sucesso");
-        } else if (attempts < maxAttempts) {
-          attempts++;
-          setTimeout(checkWallet, delay);
-        } else {
-          console.error("❌ Falha ao conectar carteira NEAR.");
-        }
-      };
-  
-      checkWallet();
   
     } catch (error) {
       console.error("Erro no cadastro:", error);
     }
   };
-  
+
+  // Efeito que monitora o accountId e, quando definido, envia-o para o backend e redireciona
+  useEffect(() => {
+    if (accountId) {
+      console.log("✅ Carteira NEAR conectada:", accountId);
+      localStorage.setItem("near_wallet", accountId);
+      const userId = localStorage.getItem("user_id");
+      if (userId) {
+        fetch("http://localhost:8000/registrar-carteira", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            user_id: userId,
+            near_wallet: accountId,
+            zec_wallet: "",
+          }),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Falha ao registrar carteira");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            console.log("✅ Carteira registrada no banco:", data);
+            // Redireciona para o feed de acordo com o perfil
+            if (selectedType === "researcher") {
+              navigate("/feed-pesquisador");
+            } else {
+              navigate("/feed-empresarios");
+            }
+          })
+          .catch((error) => console.error("Erro ao registrar carteira:", error));
+      }
+    }
+  }, [accountId, navigate, selectedType]);
+
   const typeLabel = selectedType === "researcher" ? "Pesquisador" : "Empresário";
 
   return (
@@ -116,10 +117,8 @@ export function SignupForm() {
           <p className="text-gray-600 mb-8">
             Escolha o tipo de perfil que melhor descreve você.
           </p>
-
           <div className="space-y-4 text-left">
             <h2 className="text-md font-medium">Selecione seu perfil:</h2>
-
             <button
               onClick={() => handleSelectType("researcher")}
               className="w-full p-4 border rounded-lg flex items-center gap-3 hover:bg-gray-100 transition"
@@ -132,7 +131,6 @@ export function SignupForm() {
                 <div className="text-sm text-gray-500">Compartilhe suas pesquisas e receba financiamento</div>
               </div>
             </button>
-
             <button
               onClick={() => handleSelectType("entrepreneur")}
               className="w-full p-4 border rounded-lg flex items-center gap-3 hover:bg-gray-100 transition"
@@ -151,7 +149,6 @@ export function SignupForm() {
         <>
           <h1 className="text-2xl font-semibold mb-4">Cadastro de {typeLabel}</h1>
           <p className="text-gray-600 mb-6">Preencha os campos abaixo para criar sua conta.</p>
-
           <div className="space-y-4">
             <input
               type="text"
@@ -175,14 +172,12 @@ export function SignupForm() {
               className="w-full p-2 border rounded-lg"
             />
           </div>
-
           <Button
             onClick={handleRegister}
             className="w-full py-4 text-md font-medium flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg mt-6"
           >
             Cadastrar
           </Button>
-
           <button
             onClick={() => setStep("select-type")}
             className="mt-4 text-sm text-blue-600 hover:underline"
