@@ -62,6 +62,34 @@ A [**AINDA NÃO ESTÁ DEFINIDO**] é uma plataforma capaz de permiteir que empre
 ---
 
 
+## Principais tecnologias utilizadas:
+
+### 🔹 Frontend
+- React
+- Vite
+- TailwindCSS
+- Socket.IO (mensagens em tempo real)
+- React Router
+
+### 🔹 Backend
+- Express.js (Node)
+- Axios (requisições)
+- Near-api-js (testes preliminares com Near, potencial migração)
+- web3.storage (IPFS)
+- Multer (upload de arquivos)
+
+### 🔹 Blockchain
+- 
+
+
+---
+## Próximos Passos:
+-
+
+
+
+
+___
 Coisas para adicionar como planos futuros ou etc:
 
 -  Fluxo de Receita e manutenção
