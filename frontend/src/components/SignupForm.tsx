@@ -1,10 +1,9 @@
-// src/components/SignupForm.tsx
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
 import { User, Briefcase } from "lucide-react";
 import { useNearWallet } from "../hooks/useNearWallets"; 
-
 
 export function SignupForm() {
   const { connect, getAccountId } = useNearWallet();
@@ -22,6 +21,8 @@ export function SignupForm() {
 
   const handleRegister = async () => {
     try {
+      console.log("▶️ Iniciando cadastro...");
+  
       const response = await fetch("http://localhost:8000/registrar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -35,7 +36,7 @@ export function SignupForm() {
   
       if (!response.ok) {
         const errorData = await response.json();
-        console.error("Erro da API:", errorData);
+        console.error("❌ Erro da API:", errorData);
         throw new Error("Erro ao cadastrar usuário");
       }
   
@@ -43,30 +44,46 @@ export function SignupForm() {
       const userId = data.user_id;
       localStorage.setItem("user_id", userId.toString());
       localStorage.setItem("selectedType", selectedType || "");
+      console.log("✅ Usuário cadastrado com ID:", userId);
   
       // 👉 conecta carteira NEAR
       await connect();
+      console.log("⏳ Conectando carteira...");
   
-      // Após conexão manual do usuário
-      const interval = setInterval(async () => {
+      // Aguardar conexão da carteira (versão com verificação direta)
+      let attempts = 0;
+      const maxAttempts = 10;
+      const delay = 1000;
+  
+      const checkWallet = async () => {
         const nearAccountId = getAccountId();
+        console.log("🔍 Tentativa", attempts + 1, "- Carteira:", nearAccountId);
         if (nearAccountId) {
-          clearInterval(interval);
+          // Sucesso
+          console.log("✅ Carteira NEAR conectada:", nearAccountId);
+          localStorage.setItem("near_wallet", nearAccountId);
   
-          // 🔁 Registra a carteira no backend
           await fetch("http://localhost:8000/registrar-carteira", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               user_id: userId,
               near_wallet: nearAccountId,
-              zec_wallet: "", // Aqui pode vir um campo opcional depois
+              zec_wallet: "",
             }),
           });
   
           navigate("/registro-sucesso");
+        } else if (attempts < maxAttempts) {
+          attempts++;
+          setTimeout(checkWallet, delay);
+        } else {
+          console.error("❌ Falha ao conectar carteira NEAR.");
         }
-      }, 1000);
+      };
+  
+      checkWallet();
+  
     } catch (error) {
       console.error("Erro no cadastro:", error);
     }
