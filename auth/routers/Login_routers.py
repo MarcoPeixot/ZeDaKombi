@@ -161,3 +161,47 @@ async def redefinir_senha(
     db.commit()
 
     return {"message": "Senha redefinida com sucesso"}
+
+from pydantic import BaseModel
+
+class CarteiraUpdate(BaseModel):
+    user_id: int
+    near_wallet: str
+    zec_wallet: str
+
+@router.post("/registrar-carteira")
+async def registrar_carteira(
+    dados: CarteiraUpdate,
+    db: Session = Depends(get_db)
+):
+    user = db.query(User).filter(User.id == dados.user_id).first()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado")
+
+    user.near_wallet = dados.near_wallet
+    user.zec_wallet = dados.zec_wallet
+
+    db.commit()
+    db.refresh(user)
+
+    return {
+        "message": "Carteiras registradas com sucesso",
+        "user_id": user.id,
+        "near_wallet": user.near_wallet,
+        "zec_wallet": user.zec_wallet
+    }
+
+@router.get("/carteira/{user_id}")
+async def obter_carteira(user_id: int, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == user_id).first()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado")
+
+    return {
+        "user_id": user.id,
+        "near_wallet": user.near_wallet,
+        "zec_wallet": user.zec_wallet,
+        "role": user.role.value
+    }

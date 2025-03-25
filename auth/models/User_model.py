@@ -20,6 +20,8 @@ class User(Base):
     senha = mapped_column(String(255), nullable=False)
     role = mapped_column(Enum(UserRole, create_constraint=False), nullable=False)
     created_at = mapped_column(TIMESTAMP, server_default='NOW()')
+    near_wallet = mapped_column(String(255), nullable=True)
+    zec_wallet = mapped_column(String(255), nullable=True)
 
     # Relacionamento com string para evitar import
     messages = relationship("Message", back_populates="user")
