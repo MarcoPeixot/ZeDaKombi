@@ -1,0 +1,1 @@
+/home/omatheu/Desktop/projects/ZeDaKombi/payment_contract/target/release/payment_contract: /home/omatheu/Desktop/projects/ZeDaKombi/payment_contract/src/lib.rs /home/omatheu/Desktop/projects/ZeDaKombi/payment_contract/src/main.rs
