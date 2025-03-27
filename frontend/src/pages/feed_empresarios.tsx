@@ -10,17 +10,17 @@ export default function FeedEmpresario() {
       author: {
         name: "Luisa Mendes, PhD",
         avatar: "LM",
-        institution: "Universidade Federal",
+        institution: "Federal University",
       },
-      timeAgo: "2h atrás",
+      timeAgo: "2h ago",
       content:
-        "Acabamos de publicar nossa nova pesquisa sobre IA aplicada à saúde. A taxa de precisão foi 15% maior que os métodos anteriores.",
-      tags: ["IA", "Saúde", "Pesquisa"],
+        "We have just published our new research on AI applied to healthcare. The accuracy rate was 15% higher than previous methods.",
+      tags: ["AI", "Healthcare", "Research"],
       likes: 42,
       comments: 8,
       hasArticle: true,
     },
-    // mais posts...
+    // more posts...
   ];
 
   return (
@@ -29,13 +29,13 @@ export default function FeedEmpresario() {
       <main className="bg-gray-50 min-h-screen py-10 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="mb-8">
-            <h1 className="text-2xl font-semibold text-gray-900">Feed de Pesquisas</h1>
-            <p className="text-gray-500">Explore projetos de pesquisa e oportunidades de investimento</p>
+            <h1 className="text-2xl font-semibold text-gray-900">Research Feed</h1>
+            <p className="text-gray-500">Explore research projects and investment opportunities</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-medium text-gray-900">Pesquisas Recentes</h2>
+              <h2 className="text-lg font-medium text-gray-900">Recent Research</h2>
             </div>
 
             <div className="space-y-6">
@@ -72,15 +72,13 @@ export default function FeedEmpresario() {
                       <span>{post.likes}</span>
                     </button>
 
-                    
-
                     {post.hasArticle ? (
                       <Link
                         to="/ipfs-viewer"
                         className="flex items-center gap-1 hover:text-blue-600 transition"
                       >
                         <ExternalLink className="h-4 w-4" />
-                        <span>Ver Artigo</span>
+                        <span>View Article</span>
                       </Link>
                     ) : (
                       <Link
@@ -88,7 +86,7 @@ export default function FeedEmpresario() {
                         className="flex items-center gap-1 hover:text-blue-600 transition"
                       >
                         <MessageSquare className="h-4 w-4" />
-                        <span>Entrar em contato</span>
+                        <span>Contact</span>
                       </Link>
                     )}
                   </div>
@@ -98,7 +96,7 @@ export default function FeedEmpresario() {
           </div>
 
           <div className="text-center">
-            <Button variant="outline">Carregar Mais</Button>
+            <Button variant="outline">Load More</Button>
           </div>
         </div>
       </main>

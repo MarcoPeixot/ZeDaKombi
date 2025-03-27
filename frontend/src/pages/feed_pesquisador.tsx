@@ -10,12 +10,12 @@ export default function FeedPage() {
       author: {
         name: "Luisa Mendes, PhD",
         avatar: "LM",
-        institution: "Universidade Federal",
+        institution: "Federal University",
       },
-      timeAgo: "2h atrás",
+      timeAgo: "2h ago",
       content:
-        "Acabamos de publicar nossa nova pesquisa sobre inteligência artificial aplicada à análise de dados de saúde. Nossos resultados demonstraram uma taxa de precisão 15% maior que os métodos convencionais.",
-      tags: ["IA", "Saúde", "Análise de Dados"],
+        "We have just published our new research on artificial intelligence applied to health data analysis. Our results showed a 15% higher accuracy rate than conventional methods.",
+      tags: ["AI", "Healthcare", "Data Analysis"],
       likes: 42,
       comments: 8,
       hasArticle: true,
@@ -25,12 +25,12 @@ export default function FeedPage() {
       author: {
         name: "Ricardo Pereira",
         avatar: "RP",
-        institution: "Empresa ABC Inovações",
+        institution: "ABC Innovations Company",
       },
-      timeAgo: "1d atrás",
+      timeAgo: "1d ago",
       content:
-        "Estamos buscando pesquisadores na área de energia renovável para colaboração em um novo projeto de baterias sustentáveis. Oferecemos financiamento completo e possibilidade de parceria de longo prazo.",
-      tags: ["Energia Renovável", "Sustentabilidade", "Baterias"],
+        "We are looking for researchers in the field of renewable energy to collaborate on a new sustainable battery project. We offer full funding and the possibility of long-term partnership.",
+      tags: ["Renewable Energy", "Sustainability", "Batteries"],
       likes: 29,
       comments: 12,
       hasArticle: false,
@@ -44,16 +44,16 @@ export default function FeedPage() {
         <div className="max-w-6xl mx-auto">
 
           <div className="mb-8">
-            <h1 className="text-2xl font-semibold text-gray-900">Feed de Pesquisas</h1>
-            <p className="text-gray-500">Descubra as últimas pesquisas</p>
+            <h1 className="text-2xl font-semibold text-gray-900">Research Feed</h1>
+            <p className="text-gray-500">Discover the latest research</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-medium text-gray-900">Postagens Recentes</h2>
+              <h2 className="text-lg font-medium text-gray-900">Recent Posts</h2>
               <Link to="/create-post">
                 <Button  className="bg-blue-600 hover:bg-blue-700 text-white">
-                  Nova Postagem
+                  New Post
                 </Button>
               </Link>
             </div>
@@ -99,7 +99,7 @@ export default function FeedPage() {
                         className="flex items-center gap-1 hover:text-blue-600 transition"
                       >
                         <ExternalLink className="h-4 w-4" />
-                        <span>Ver Artigo</span>
+                        <span>View Article</span>
                       </Link>
                     ) : (
                       <Link
@@ -107,7 +107,7 @@ export default function FeedPage() {
                         className="flex items-center gap-1 hover:text-blue-600 transition"
                       >
                         <MessageSquare className="h-4 w-4" />
-                        <span>Entrar em contato</span>
+                        <span>Contact</span>
                       </Link>
                     )}
                   </div>
@@ -117,7 +117,7 @@ export default function FeedPage() {
           </div>
 
           <div className="text-center">
-            <Button variant="outline">Carregar Mais</Button>
+            <Button variant="outline">Load More</Button>
           </div>
         </div>
       </main>
