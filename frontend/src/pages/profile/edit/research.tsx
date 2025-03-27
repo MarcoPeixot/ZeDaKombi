@@ -10,7 +10,7 @@ export default function EditResearcherProfilePage() {
   const navigate = useNavigate();
   const { userType } = useUser();
 
-  // Redirecionar se não for pesquisador
+  // Redirect if not a researcher
   useEffect(() => {
     if (userType === "entrepreneur") {
       navigate("/profile/edit/entrepreneur");
@@ -18,7 +18,7 @@ export default function EditResearcherProfilePage() {
   }, [userType, navigate]);
 
   const handleSave = () => {
-    // Aqui você implementaria a lógica para salvar os dados do perfil
+    // Here you would implement the logic to save the profile data
     navigate("/profile");
   };
 
@@ -30,7 +30,7 @@ export default function EditResearcherProfilePage() {
           <button onClick={() => navigate("/profile")} className="text-secondary hover:text-primary">
             <ArrowLeft className="h-5 w-5" />
           </button>
-          <h1 className="text-2xl font-medium">Editar Perfil de Pesquisador</h1>
+          <h1 className="text-2xl font-medium">Edit Researcher Profile</h1>
         </div>
 
         <div className="bg-white rounded-2xl shadow-md p-6">
@@ -46,7 +46,7 @@ export default function EditResearcherProfilePage() {
                   JD
                 </div>
                 <Button variant="outline" type="button">
-                  Alterar Foto
+                  Change Photo
                 </Button>
               </div>
 
@@ -54,7 +54,7 @@ export default function EditResearcherProfilePage() {
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="mb-4">
                     <label htmlFor="name" className="block mb-2 font-medium">
-                      Nome Completo
+                      Full Name
                     </label>
                     <input
                       type="text"
@@ -66,7 +66,7 @@ export default function EditResearcherProfilePage() {
 
                   <div className="mb-4">
                     <label htmlFor="title" className="block mb-2 font-medium">
-                      Título Acadêmico
+                      Academic Title
                     </label>
                     <input
                       type="text"
@@ -78,24 +78,24 @@ export default function EditResearcherProfilePage() {
 
                   <div className="mb-4">
                     <label htmlFor="institution" className="block mb-2 font-medium">
-                      Instituição
+                      Institution
                     </label>
                     <input
                       type="text"
                       id="institution"
-                      defaultValue="Universidade Federal"
+                      defaultValue="Federal University"
                       className="w-full p-3 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                     />
                   </div>
 
                   <div className="mb-4">
                     <label htmlFor="field" className="block mb-2 font-medium">
-                      Área de Pesquisa
+                      Research Area
                     </label>
                     <input
                       type="text"
                       id="field"
-                      defaultValue="Inteligência Artificial e Blockchain"
+                      defaultValue="Artificial Intelligence and Blockchain"
                       className="w-full p-3 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                     />
                   </div>
@@ -105,18 +105,18 @@ export default function EditResearcherProfilePage() {
 
             <div className="mb-6">
               <label htmlFor="bio" className="block mb-2 font-medium">
-                Biografia
+                Biography
               </label>
               <textarea
                 id="bio"
                 rows={4}
-                defaultValue="Especialista em aplicações de blockchain para pesquisa científica e transferência de conhecimento. Trabalho na interseção entre IA, criptografia e sistemas descentralizados."
+                defaultValue="Specialist in blockchain applications for scientific research and knowledge transfer. Working at the intersection of AI, cryptography, and decentralized systems."
                 className="w-full p-3 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
               ></textarea>
             </div>
 
             <div className="mb-6">
-              <label className="block mb-2 font-medium">Especialidades</label>
+              <label className="block mb-2 font-medium">Specialties</label>
               <div className="flex flex-wrap gap-2 mb-2">
                 <span className="tag flex items-center">
                   Blockchain
@@ -125,13 +125,13 @@ export default function EditResearcherProfilePage() {
                   </button>
                 </span>
                 <span className="tag flex items-center">
-                  Inteligência Artificial
+                  Artificial Intelligence
                   <button type="button" className="ml-1 text-secondary hover:text-danger">
                     ×
                   </button>
                 </span>
                 <span className="tag flex items-center">
-                  Criptografia
+                  Cryptography
                   <button type="button" className="ml-1 text-secondary hover:text-danger">
                     ×
                   </button>
@@ -141,7 +141,7 @@ export default function EditResearcherProfilePage() {
                 <input
                   type="text"
                   className="flex-1 p-3 border border-input rounded-l-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="Adicionar nova especialidade"
+                  placeholder="Add new specialty"
                 />
                 <Button type="button" className="rounded-l-none">
                   <Plus className="h-4 w-4" />
@@ -150,49 +150,49 @@ export default function EditResearcherProfilePage() {
             </div>
 
             <div className="mb-6">
-              <label className="block mb-2 font-medium">Formação Acadêmica</label>
+              <label className="block mb-2 font-medium">Academic Background</label>
 
               <div className="border rounded-lg p-4 mb-4">
                 <div className="flex justify-between items-start mb-2">
                   <div>
-                    <h3 className="font-medium">Doutorado em Ciência da Computação</h3>
-                    <p className="text-sm text-secondary">Universidade Federal • 2015-2019</p>
+                    <h3 className="font-medium">PhD in Computer Science</h3>
+                    <p className="text-sm text-secondary">Federal University • 2015-2019</p>
                   </div>
                   <Button variant="outline" type="button" className="text-danger">
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
                 <p className="text-sm">
-                  Tese: "Aplicações de Blockchain em Sistemas de Verificação de Dados Científicos"
+                  Thesis: "Blockchain Applications in Scientific Data Verification Systems"
                 </p>
               </div>
 
               <div className="border rounded-lg p-4 mb-4">
                 <div className="flex justify-between items-start mb-2">
                   <div>
-                    <h3 className="font-medium">Mestrado em Ciência da Computação</h3>
-                    <p className="text-sm text-secondary">Universidade Estadual • 2013-2015</p>
+                    <h3 className="font-medium">Master's in Computer Science</h3>
+                    <p className="text-sm text-secondary">State University • 2013-2015</p>
                   </div>
                   <Button variant="outline" type="button" className="text-danger">
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
-                <p className="text-sm">Dissertação: "Algoritmos de Aprendizado de Máquina para Análise de Dados"</p>
+                <p className="text-sm">Dissertation: "Machine Learning Algorithms for Data Analysis"</p>
               </div>
 
               <Button variant="outline" type="button" className="gap-2">
                 <Plus className="h-4 w-4" />
-                Adicionar Formação
+                Add Background
               </Button>
             </div>
 
             <div className="mb-6">
-              <label className="block mb-2 font-medium">Publicações Destacadas</label>
+              <label className="block mb-2 font-medium">Highlighted Publications</label>
 
               <div className="border rounded-lg p-4 mb-4">
                 <div className="flex justify-between items-start mb-2">
                   <div>
-                    <h3 className="font-medium">Aplicações de Blockchain na Validação de Pesquisas Científicas</h3>
+                    <h3 className="font-medium">Blockchain Applications in Scientific Research Validation</h3>
                     <p className="text-sm text-secondary">Journal of Blockchain Research • 2022</p>
                   </div>
                   <Button variant="outline" type="button" className="text-danger">
@@ -203,12 +203,12 @@ export default function EditResearcherProfilePage() {
 
               <Button variant="outline" type="button" className="gap-2">
                 <Plus className="h-4 w-4" />
-                Adicionar Publicação
+                Add Publication
               </Button>
             </div>
 
             <div className="mb-6">
-              <label className="block mb-2 font-medium">Informações de Contato</label>
+              <label className="block mb-2 font-medium">Contact Information</label>
 
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="mb-4">
@@ -218,7 +218,7 @@ export default function EditResearcherProfilePage() {
                   <input
                     type="email"
                     id="email"
-                    defaultValue="joao.dias@universidade.edu"
+                    defaultValue="joao.dias@university.edu"
                     className="w-full p-3 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                   />
                 </div>
@@ -238,7 +238,7 @@ export default function EditResearcherProfilePage() {
             </div>
 
             <div className="mb-6">
-              <label className="block mb-2 font-medium">Endereço da Carteira NEAR</label>
+              <label className="block mb-2 font-medium">NEAR Wallet Address</label>
               <input
                 type="text"
                 defaultValue="joaodias.near"
@@ -246,15 +246,15 @@ export default function EditResearcherProfilePage() {
                 disabled
               />
               <p className="text-xs text-secondary mt-1">
-                Este é o endereço da sua carteira conectada. Para alterar, você precisa reconectar com outra carteira.
+                This is your connected wallet address. To change it, you need to reconnect with another wallet.
               </p>
             </div>
 
             <div className="flex justify-end gap-4">
               <Button variant="outline" type="button" onClick={() => navigate("/profile")}>
-                Cancelar
+                Cancel
               </Button>
-              <Button type="submit">Salvar Alterações</Button>
+              <Button type="submit">Save Changes</Button>
             </div>
           </form>
         </div>

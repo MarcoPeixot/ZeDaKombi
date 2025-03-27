@@ -23,7 +23,7 @@ export function SignupForm() {
     try {
       console.log("▶️ Iniciando cadastro...");
   
-      const response = await fetch("http://localhost:8000/registrar", {
+      const response = await fetch("https://zedakombi-1.onrender.com/registrar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

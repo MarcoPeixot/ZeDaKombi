@@ -6,8 +6,8 @@ export default function TransactionsPage() {
   const transactions = [
     {
       id: 1,
-      title: "Pagamento por Artigo",
-      description: "ABC Inovações",
+      title: "Article Payment",
+      description: "ABC Innovations",
       date: "12/04/2023",
       amount: 2500,
       type: "received",
@@ -15,7 +15,7 @@ export default function TransactionsPage() {
     },
     {
       id: 2,
-      title: "Colaboração em Pesquisa",
+      title: "Research Collaboration",
       description: "Tech Solutions",
       date: "05/04/2023",
       amount: 1800,
@@ -24,7 +24,7 @@ export default function TransactionsPage() {
     },
     {
       id: 3,
-      title: "Consultoria",
+      title: "Consulting",
       description: "Green Energy",
       date: "28/03/2023",
       amount: 1200,
@@ -33,8 +33,8 @@ export default function TransactionsPage() {
     },
     {
       id: 4,
-      title: "Acesso a Dados",
-      description: "Instituto de Pesquisas",
+      title: "Data Access",
+      description: "Research Institute",
       date: "15/03/2023",
       amount: 500,
       type: "sent",
@@ -42,7 +42,7 @@ export default function TransactionsPage() {
     },
     {
       id: 5,
-      title: "Pagamento por Webinar",
+      title: "Webinar Payment",
       description: "Invest Capital",
       date: "10/03/2023",
       amount: 800,
@@ -56,41 +56,41 @@ export default function TransactionsPage() {
       <Navbar />
       <main className="max-w-7xl mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-2xl font-semibold mb-2">Transações Zcash</h1>
-          <p className="text-secondary">Gerencie seus pagamentos e recebimentos na blockchain</p>
+          <h1 className="text-2xl font-semibold mb-2">Zcash Transactions</h1>
+          <p className="text-secondary">Manage your blockchain payments and receipts</p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white p-6 rounded-2xl shadow-md">
-            <h3 className="text-secondary mb-1">Saldo Total</h3>
+            <h3 className="text-secondary mb-1">Total Balance</h3>
             <div className="text-2xl font-bold">ZEC 45.82</div>
-            <div className="text-sm text-green-600 mt-1">≈ R$ 12.450,00</div>
+            <div className="text-sm text-green-600 mt-1">≈ $ 12,450.00</div>
           </div>
 
           <div className="bg-white p-6 rounded-2xl shadow-md">
-            <h3 className="text-secondary mb-1">Recebido (30 dias)</h3>
+            <h3 className="text-secondary mb-1">Received (30 days)</h3>
             <div className="text-2xl font-bold text-green-600">ZEC 12.50</div>
-            <div className="text-sm text-secondary mt-1">5 transações</div>
+            <div className="text-sm text-secondary mt-1">5 transactions</div>
           </div>
 
           <div className="bg-white p-6 rounded-2xl shadow-md">
-            <h3 className="text-secondary mb-1">Enviado (30 dias)</h3>
+            <h3 className="text-secondary mb-1">Sent (30 days)</h3>
             <div className="text-2xl font-bold text-red-500">ZEC 2.30</div>
-            <div className="text-sm text-secondary mt-1">2 transações</div>
+            <div className="text-sm text-secondary mt-1">2 transactions</div>
           </div>
         </div>
 
         <div className="bg-white p-6 rounded-2xl shadow-md">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold">Histórico de Transações</h2>
+            <h2 className="text-lg font-semibold">Transaction History</h2>
             <div className="flex gap-2">
-              <Button variant="outline"  className="gap-2">
+              <Button variant="outline" className="gap-2">
                 <Filter className="h-4 w-4" />
-                Filtrar
+                Filter
               </Button>
-              <Button variant="outline"  className="gap-2">
+              <Button variant="outline" className="gap-2">
                 <Download className="h-4 w-4" />
-                Exportar
+                Export
               </Button>
             </div>
           </div>
@@ -99,11 +99,11 @@ export default function TransactionsPage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b text-left text-sm text-secondary">
-                  <th className="py-3 px-4">Transação</th>
-                  <th className="py-3 px-4">Data</th>
-                  <th className="py-3 px-4">Valor</th>
+                  <th className="py-3 px-4">Transaction</th>
+                  <th className="py-3 px-4">Date</th>
+                  <th className="py-3 px-4">Amount</th>
                   <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4 text-right">Ações</th>
+                  <th className="py-3 px-4 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -144,12 +144,12 @@ export default function TransactionsPage() {
                             : "bg-yellow-100 text-yellow-700"
                         }`}
                       >
-                        {tx.status === "confirmed" ? "Confirmado" : "Pendente"}
+                        {tx.status === "confirmed" ? "Confirmed" : "Pending"}
                       </span>
                     </td>
                     <td className="py-4 px-4 text-right">
-                      <Button variant="outline" >
-                        Detalhes
+                      <Button variant="outline">
+                        Details
                       </Button>
                     </td>
                   </tr>
@@ -159,13 +159,13 @@ export default function TransactionsPage() {
           </div>
 
           <div className="flex justify-between items-center mt-6 text-sm text-secondary">
-            <div>Mostrando 5 de 24 transações</div>
+            <div>Showing 5 of 24 transactions</div>
             <div className="flex gap-2">
-              <Button variant="outline"  disabled>
-                Anterior
+              <Button variant="outline" disabled>
+                Previous
               </Button>
-              <Button variant="outline" >
-                Próxima
+              <Button variant="outline">
+                Next
               </Button>
             </div>
           </div>
