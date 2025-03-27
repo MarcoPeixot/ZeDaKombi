@@ -1,10 +1,12 @@
-// src/components/SignupForm.tsx
-import { useState } from "react";
+// components/SignupForm.tsx
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
 import { User, Briefcase } from "lucide-react";
+import { useNearWallet } from "../hooks/useNearWallets";
 
 export function SignupForm() {
+  const { connect, accountId } = useNearWallet();
   const [step, setStep] = useState<"select-type" | "register">("select-type");
   const [selectedType, setSelectedType] = useState<"researcher" | "entrepreneur" | null>(null);
   const [name, setName] = useState("");
@@ -19,32 +21,47 @@ export function SignupForm() {
 
   const handleRegister = async () => {
     try {
+      console.log("▶️ Iniciando cadastro...");
+  
       const response = await fetch("http://localhost:8000/registrar", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name,
           email,
-          senha: password, // Certifique-se de que o campo "senha" está correto
-          role: selectedType === "researcher" ? "pesquisador" : "empresario", // Certifique-se de que as roles estão corretas
+          senha: password,
+          role: selectedType === "researcher" ? "pesquisador" : "empresario",
         }),
       });
   
       if (!response.ok) {
+        const errorData = await response.json();
+        console.error("❌ Erro da API:", errorData);
         throw new Error("Erro ao cadastrar usuário");
       }
   
       const data = await response.json();
-      console.log("Usuário cadastrado com sucesso:", data);
+      const userId = data.user_id;
+      localStorage.setItem("user_id", userId.toString());
+      localStorage.setItem("selectedType", selectedType || "");
+      console.log("✅ Usuário cadastrado com ID:", userId);
   
-      // Redireciona para a tela de login após o cadastro
-      navigate("/login");
+      // Inicia a conexão com a carteira NEAR (abre o modal)
+      await connect();
+  
     } catch (error) {
       console.error("Erro no cadastro:", error);
     }
   };
+
+  // Ao detectar o accountId (carteira conectada), redireciona para a tela de RegistroSucesso
+  useEffect(() => {
+    if (accountId) {
+      console.log("✅ Carteira NEAR conectada:", accountId);
+      localStorage.setItem("near_wallet", accountId);
+      navigate("/registro-sucesso");
+    }
+  }, [accountId, navigate]);
 
   const typeLabel = selectedType === "researcher" ? "Pesquisador" : "Empresário";
 
@@ -73,10 +90,8 @@ export function SignupForm() {
           <p className="text-gray-600 mb-8">
             Escolha o tipo de perfil que melhor descreve você.
           </p>
-
           <div className="space-y-4 text-left">
             <h2 className="text-md font-medium">Selecione seu perfil:</h2>
-
             <button
               onClick={() => handleSelectType("researcher")}
               className="w-full p-4 border rounded-lg flex items-center gap-3 hover:bg-gray-100 transition"
@@ -89,7 +104,6 @@ export function SignupForm() {
                 <div className="text-sm text-gray-500">Compartilhe suas pesquisas e receba financiamento</div>
               </div>
             </button>
-
             <button
               onClick={() => handleSelectType("entrepreneur")}
               className="w-full p-4 border rounded-lg flex items-center gap-3 hover:bg-gray-100 transition"
@@ -108,7 +122,6 @@ export function SignupForm() {
         <>
           <h1 className="text-2xl font-semibold mb-4">Cadastro de {typeLabel}</h1>
           <p className="text-gray-600 mb-6">Preencha os campos abaixo para criar sua conta.</p>
-
           <div className="space-y-4">
             <input
               type="text"
@@ -132,14 +145,12 @@ export function SignupForm() {
               className="w-full p-2 border rounded-lg"
             />
           </div>
-
           <Button
             onClick={handleRegister}
             className="w-full py-4 text-md font-medium flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg mt-6"
           >
             Cadastrar
           </Button>
-
           <button
             onClick={() => setStep("select-type")}
             className="mt-4 text-sm text-blue-600 hover:underline"

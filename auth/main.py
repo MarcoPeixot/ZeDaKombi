@@ -4,6 +4,7 @@ from fastapi.openapi.utils import get_openapi
 import uvicorn
 from routers import Login_routers
 from fastapi.security import HTTPBearer
+from routers.transaction_router import router as transaction_router
 
 # Criar uma instância do aplicativo FastAPI
 app = FastAPI(title="Autenticador", version="1.0.0")
@@ -60,6 +61,7 @@ app.add_middleware(
 )
 
 app.include_router(Login_routers)
+app.include_router(transaction_router)
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, log_level="info")
