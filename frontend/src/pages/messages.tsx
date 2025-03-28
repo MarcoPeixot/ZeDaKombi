@@ -38,8 +38,8 @@ interface UserInfo {
 }
 
 // Configurações da API
-const API_BASE_URL = "https://chat-tbvx.onrender.com";
-const SOCKET_URL = "https://chat-tbvx.onrender.com";
+const API_BASE_URL = "http://localhost:3001";
+const SOCKET_URL = "http://localhost:3001"; // URL do servidor Socket.IO
 const API_AUTH = "https://zedakombi-1.onrender.com";
 
 // Socket instance management

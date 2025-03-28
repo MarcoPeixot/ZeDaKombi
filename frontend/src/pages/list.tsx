@@ -19,7 +19,7 @@ export default function UserListPage() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetch("http://localhost:8000/usuarios", {
+        const res = await fetch("https://zedakombi-1.onrender.com/usuarios", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
