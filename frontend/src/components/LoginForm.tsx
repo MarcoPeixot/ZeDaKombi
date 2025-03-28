@@ -26,26 +26,32 @@ export function LoginForm() {
           password: password,
         }),
       });
-
+  
       if (!response.ok) {
         throw new Error('Login failed');
       }
-
+  
       const data = await response.json();
-      console.log('Resposta do backend:', data);
-
-      // Armazenar o token e a role
-      login(data.access_token, data.role);
-
-      // Adicione esta parte para armazenar o ID do usuário
-      const userId = data.user_id || Math.floor(Math.random() * 100) + 1; // ID aleatório para teste
-      localStorage.setItem('userId', userId.toString());
-      console.log(`ID do usuário armazenado: ${userId}`);
-
-      // Atualizar o UserContext com a role
-      setUserType(data.role);
-
-      // Redirecionar com base na role
+      
+      // Busca informações completas do usuário
+      const userResponse = await fetch(`https://zedakombi-1.onrender.com/usuarios/${data.user_id}`);
+      if (!userResponse.ok) {
+        throw new Error('Failed to fetch user details');
+      }
+      const userData = await userResponse.json();
+  
+      // Armazena todas as informações
+      login(
+        data.access_token, 
+        data.role,
+        {
+          id: data.user_id.toString(),
+          name: userData.name,
+          email: email
+        }
+      );
+  
+      // Redireciona com base na role
       if (data.role === "pesquisador") {
         navigate("/researcher-feed");
       } else if (data.role === "empresario") {

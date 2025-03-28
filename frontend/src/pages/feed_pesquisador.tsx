@@ -1,41 +1,63 @@
-import { Navbar } from "../components/ui/navbar"
-import { Button } from "../components/ui/button"
-import { MessageSquare, ThumbsUp, ExternalLink } from "lucide-react"
-import { Link } from "react-router-dom"
+// src/pages/feed_researcher.tsx
+import { useState, useEffect } from 'react';
+import { Navbar } from "../components/ui/navbar";
+import { Button } from "../components/ui/button";
+import { MessageSquare, ThumbsUp, ExternalLink } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { fetchResearchPosts } from '../services/api-artigo';
+
+interface Author {
+  name: string;
+  avatar: string;
+  institution: string;
+}
+
+interface Post {
+  id: number;
+  author: Author;
+  timeAgo: string;
+  content: string;
+  tags: string[];
+  likes: number;
+  comments: number;
+  hasArticle: boolean;
+  articleData?: {
+    titulo: string;
+    autor: string;
+    ipfs_hash: string;
+  };
+}
 
 export default function FeedPage() {
-  const posts = [
-    {
-      id: 1,
-      author: {
-        name: "Luisa Mendes, PhD",
-        avatar: "LM",
-        institution: "Federal University",
-      },
-      timeAgo: "2h ago",
-      content:
-        "We have just published our new research on artificial intelligence applied to health data analysis. Our results showed a 15% higher accuracy rate than conventional methods.",
-      tags: ["AI", "Healthcare", "Data Analysis"],
-      likes: 42,
-      comments: 8,
-      hasArticle: true,
-    },
-    {
-      id: 2,
-      author: {
-        name: "Ricardo Pereira",
-        avatar: "RP",
-        institution: "ABC Innovations Company",
-      },
-      timeAgo: "1d ago",
-      content:
-        "We are looking for researchers in the field of renewable energy to collaborate on a new sustainable battery project. We offer full funding and the possibility of long-term partnership.",
-      tags: ["Renewable Energy", "Sustainability", "Batteries"],
-      likes: 29,
-      comments: 12,
-      hasArticle: false,
-    },
-  ]
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const loadPosts = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchResearchPosts();
+        setPosts(data);
+      } catch (err) {
+        setError('Failed to load research posts');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadPosts();
+  }, []);
+
+  const handleViewArticle = (articleData: any) => {
+    // Navega para a página de visualização com os dados do artigo
+    navigate('/ipfs-viewer', { state: { article: articleData } });
+  };
+
+  if (loading) return <div className="text-center py-10">Loading research posts...</div>;
+  if (error) return <div className="text-center py-10 text-red-500">{error}</div>;
 
   return (
     <>
@@ -51,9 +73,9 @@ export default function FeedPage() {
           <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-medium text-gray-900">Recent Posts</h2>
-              <Link to="/create-post">
-                <Button  className="bg-blue-600 hover:bg-blue-700 text-white">
-                  New Post
+              <Link to="/submit">
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                  Submit New Research
                 </Button>
               </Link>
             </div>
@@ -92,15 +114,14 @@ export default function FeedPage() {
                       <span>{post.likes}</span>
                     </button>
 
-                    
                     {post.hasArticle ? (
-                      <Link
-                        to="/ipfs-viewer"
+                      <button
+                        onClick={() => post.articleData && handleViewArticle(post.articleData)}
                         className="flex items-center gap-1 hover:text-blue-600 transition"
                       >
                         <ExternalLink className="h-4 w-4" />
                         <span>View Article</span>
-                      </Link>
+                      </button>
                     ) : (
                       <Link
                         to="/messages"
@@ -122,5 +143,5 @@ export default function FeedPage() {
         </div>
       </main>
     </>
-  )
+  );
 }
