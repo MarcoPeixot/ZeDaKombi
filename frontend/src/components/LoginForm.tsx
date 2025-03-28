@@ -18,7 +18,7 @@ export function LoginForm() {
 
   const handleLogin = async () => {
     if (!email || !password) {
-      setError("Por favor, preencha todos os campos.");
+      setError("Please fill in all fields.");
       return;
     }
 
@@ -39,20 +39,20 @@ export function LoginForm() {
   
       if (!response.ok) {
         const errorData = await response.json();
-        setError(errorData?.detail || "Email ou senha incorretos. Tente novamente.");
+        setError(errorData?.detail || "Incorrect email or password. Please try again.");
         throw new Error('Login failed');
       }
   
       const data = await response.json();
       
-      // Busca informações completas do usuário
+      // Fetch complete user information
       const userResponse = await fetch(`https://zedakombi-1.onrender.com/usuarios/${data.user_id}`);
       if (!userResponse.ok) {
         throw new Error('Failed to fetch user details');
       }
       const userData = await userResponse.json();
   
-      // Armazena todas as informações
+      // Store all information
       login(
         data.access_token, 
         data.role,
@@ -63,7 +63,7 @@ export function LoginForm() {
         }
       );
   
-      // Redireciona com base na role
+      // Redirect based on role
       if (data.role === "pesquisador") {
         navigate("/researcher-feed");
       } else if (data.role === "empresario") {
@@ -106,7 +106,7 @@ export function LoginForm() {
           <div>
             <Link to="/signup">
               <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                Cadastre-se
+                Sign Up
               </Button>
             </Link>
           </div>
@@ -120,9 +120,9 @@ export function LoginForm() {
             <div className="h-16 w-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
               <LogIn className="h-8 w-8 text-blue-500" />
             </div>
-            <h1 className="text-2xl font-bold mb-2">Bem-vindo à plataforma</h1>
+            <h1 className="text-2xl font-bold mb-2">Welcome to the platform</h1>
             <p className="text-gray-400">
-              A ponte entre a pesquisa científica e o mundo empresarial, utilizando blockchain para promover inovação e colaboração.
+              The bridge between scientific research and the business world, using blockchain to promote innovation and collaboration.
             </p>
           </div>
           
@@ -149,7 +149,7 @@ export function LoginForm() {
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
               <input
                 type="password"
-                placeholder="Senha"
+                placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 onKeyPress={handleKeyPress}
@@ -159,7 +159,7 @@ export function LoginForm() {
             
             <div className="flex justify-end">
               <Link to="/forgot-password" className="text-sm text-blue-500 hover:underline">
-                Esqueceu sua senha?
+                Forgot your password?
               </Link>
             </div>
           </div>
@@ -170,10 +170,10 @@ export function LoginForm() {
             className="w-full py-4 mt-6 text-base font-medium flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
           >
             {loading ? (
-              "Conectando..."
+              "Connecting..."
             ) : (
               <>
-                Conectar
+                Connect
                 <ArrowRight className="h-5 w-5" />
               </>
             )}
@@ -181,21 +181,21 @@ export function LoginForm() {
           
           <div className="mt-8 text-center">
             <p className="text-gray-400">
-              Não tem uma conta?{" "}
+              Don't have an account?{" "}
               <Link to="/signup" className="text-blue-500 hover:underline font-medium">
-                Cadastre-se
+                Sign Up
               </Link>
             </p>
           </div>
           
           <p className="text-xs text-gray-500 mt-6 text-center">
-            Ao conectar, você concorda com nossos{" "}
+            By connecting, you agree to our{" "}
             <a href="#" className="text-blue-500 hover:underline">
-              Termos de Serviço
+              Terms of Service
             </a>{" "}
-            e{" "}
+            and{" "}
             <a href="#" className="text-blue-500 hover:underline">
-              Política de Privacidade
+              Privacy Policy
             </a>
           </p>
         </div>
@@ -204,7 +204,7 @@ export function LoginForm() {
       {/* Footer */}
       <footer className="py-6 border-t border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-400 text-sm">
-          <p>© 2025 NexusR. Todos os direitos reservados.</p>
+          <p>© 2025 NexusR. All rights reserved.</p>
         </div>
       </footer>
     </div>

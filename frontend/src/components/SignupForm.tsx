@@ -24,14 +24,14 @@ export function SignupForm() {
 
   const handleRegister = async () => {
     if (!name || !email || !password) {
-      setError("Por favor, preencha todos os campos.");
+      setError("Please fill in all fields.");
       return;
     }
     
     try {
       setLoading(true);
       setError("");
-      console.log("▶️ Iniciando cadastro...");
+      console.log("▶️ Starting registration...");
   
       const response = await fetch("https://zedakombi-1.onrender.com/registrar", {
         method: "POST",
@@ -46,37 +46,37 @@ export function SignupForm() {
   
       if (!response.ok) {
         const errorData = await response.json();
-        console.error("❌ Erro da API:", errorData);
-        setError(errorData.message || "Erro ao cadastrar usuário. Tente novamente.");
-        throw new Error("Erro ao cadastrar usuário");
+        console.error("❌ API Error:", errorData);
+        setError(errorData.message || "Error registering user. Please try again.");
+        throw new Error("Error registering user");
       }
   
       const data = await response.json();
       const userId = data.user_id;
       localStorage.setItem("user_id", userId.toString());
       localStorage.setItem("selectedType", selectedType || "");
-      console.log("✅ Usuário cadastrado com ID:", userId);
+      console.log("✅ User registered with ID:", userId);
   
-      // Inicia a conexão com a carteira NEAR (abre o modal)
+      // Initiates NEAR wallet connection (opens modal)
       await connect();
   
     } catch (error) {
-      console.error("Erro no cadastro:", error);
+      console.error("Registration error:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  // Ao detectar o accountId (carteira conectada), redireciona para a tela de RegistroSucesso
+  // When accountId is detected (wallet connected), redirects to SuccessRegistration screen
   useEffect(() => {
     if (accountId) {
-      console.log("✅ Carteira NEAR conectada:", accountId);
+      console.log("✅ NEAR wallet connected:", accountId);
       localStorage.setItem("near_wallet", accountId);
       navigate("/registro-sucesso");
     }
   }, [accountId, navigate]);
 
-  const typeLabel = selectedType === "researcher" ? "Pesquisador" : "Empresário";
+  const typeLabel = selectedType === "researcher" ? "Researcher" : "Entrepreneur";
   const typeIcon = selectedType === "researcher" ? <User className="h-5 w-5" /> : <Briefcase className="h-5 w-5" />;
 
   return (
@@ -119,14 +119,14 @@ export function SignupForm() {
                 <div className="h-16 w-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
                   <CheckCircle className="h-8 w-8 text-blue-500" />
                 </div>
-                <h1 className="text-2xl font-bold mb-2">Crie sua conta</h1>
+                <h1 className="text-2xl font-bold mb-2">Create your account</h1>
                 <p className="text-gray-400">
-                  Escolha o tipo de perfil que melhor descreve você.
+                  Choose the profile type that best describes you.
                 </p>
               </div>
               
               <div className="space-y-4">
-                <h2 className="text-lg font-medium text-white">Selecione seu perfil:</h2>
+                <h2 className="text-lg font-medium text-white">Select your profile:</h2>
                 
                 <button
                   onClick={() => handleSelectType("researcher")}
@@ -136,8 +136,8 @@ export function SignupForm() {
                     <User className="h-6 w-6" />
                   </div>
                   <div className="text-left">
-                    <div className="font-medium text-lg group-hover:text-blue-500 transition">Pesquisador</div>
-                    <div className="text-sm text-gray-400">Compartilhe suas pesquisas e receba financiamento</div>
+                    <div className="font-medium text-lg group-hover:text-blue-500 transition">Researcher</div>
+                    <div className="text-sm text-gray-400">Share your research and receive funding</div>
                   </div>
                 </button>
                 
@@ -149,17 +149,17 @@ export function SignupForm() {
                     <Briefcase className="h-6 w-6" />
                   </div>
                   <div className="text-left">
-                    <div className="font-medium text-lg group-hover:text-blue-500 transition">Empresário</div>
-                    <div className="text-sm text-gray-400">Encontre pesquisas e invista em inovação</div>
+                    <div className="font-medium text-lg group-hover:text-blue-500 transition">Entrepreneur</div>
+                    <div className="text-sm text-gray-400">Find research and invest in innovation</div>
                   </div>
                 </button>
               </div>
               
               <div className="mt-8 text-center">
                 <p className="text-sm text-gray-400">
-                  Já possui uma conta?{" "}
+                  Already have an account?{" "}
                   <Link to="/login" className="text-blue-500 hover:underline">
-                    Faça login
+                    Sign in
                   </Link>
                 </p>
               </div>
@@ -172,7 +172,7 @@ export function SignupForm() {
                   className="flex items-center text-gray-400 hover:text-blue-500"
                 >
                   <ArrowLeft className="h-4 w-4 mr-1" />
-                  <span>Voltar</span>
+                  <span>Back</span>
                 </button>
               </div>
               
@@ -180,8 +180,8 @@ export function SignupForm() {
                 <div className="h-16 w-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
                   {typeIcon}
                 </div>
-                <h1 className="text-2xl font-bold mb-2">Cadastro de {typeLabel}</h1>
-                <p className="text-gray-400">Preencha os campos abaixo para criar sua conta.</p>
+                <h1 className="text-2xl font-bold mb-2">{typeLabel} Registration</h1>
+                <p className="text-gray-400">Fill in the fields below to create your account.</p>
               </div>
               
               {error && (
@@ -195,7 +195,7 @@ export function SignupForm() {
                   <UserCircle className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
                   <input
                     type="text"
-                    placeholder="Nome completo"
+                    placeholder="Full name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     className="w-full p-3 pl-10 bg-gray-800/80 border border-gray-700 focus:border-blue-500 rounded-lg outline-none text-white"
@@ -217,7 +217,7 @@ export function SignupForm() {
                   <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
                   <input
                     type="password"
-                    placeholder="Senha"
+                    placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="w-full p-3 pl-10 bg-gray-800/80 border border-gray-700 focus:border-blue-500 rounded-lg outline-none text-white"
@@ -230,19 +230,19 @@ export function SignupForm() {
                 disabled={loading}
                 className="w-full py-4 text-base font-medium flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg mt-8"
               >
-                {loading ? "Processando..." : "Cadastrar e conectar carteira NEAR"}
+                {loading ? "Processing..." : "Register and connect NEAR wallet"}
               </Button>
             </>
           )}
           
           <p className="text-xs text-gray-500 mt-6 text-center">
-            Ao cadastrar, você concorda com nossos{" "}
+            By registering, you agree to our{" "}
             <a href="#" className="text-blue-500 hover:underline">
-              Termos de Serviço
+              Terms of Service
             </a>{" "}
-            e{" "}
+            and{" "}
             <a href="#" className="text-blue-500 hover:underline">
-              Política de Privacidade
+              Privacy Policy
             </a>
           </p>
         </div>
@@ -251,7 +251,7 @@ export function SignupForm() {
       {/* Footer */}
       <footer className="py-6 border-t border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-400 text-sm">
-          <p>© 2025 NexusR. Todos os direitos reservados.</p>
+          <p>© 2025 NexusR. All rights reserved.</p>
         </div>
       </footer>
     </div>
