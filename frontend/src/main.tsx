@@ -19,6 +19,7 @@ import EditResearcherProfilePage from "./pages/profile/edit/research";
 import IPFSViewerPage from "./pages/ipfs-view";
 import RegistroSucesso from "../src/pages/RegistroSucesso";
 import UserListPage from "./pages/list";
+import LadingPage from "./pages/landing_page";
 
 if (typeof global === "undefined") {
   (window as any).global = window;
@@ -30,7 +31,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       <UserProvider>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<LoginPage />} />
+            <Route path="/" element={<LadingPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupForm />} />
             <Route path="/registro-sucesso" element={<RegistroSucesso />} />

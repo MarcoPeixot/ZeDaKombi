@@ -1,7 +1,7 @@
 // components/LoginForm.tsx
 import { useState } from "react";
 import { Button } from "../components/ui/button";
-import { Lock } from "lucide-react";
+import { Lock, Mail, LogIn, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/auth-context";
 import { useUser } from "../context/user-context";
@@ -10,12 +10,22 @@ import { Link } from "react-router-dom";
 export function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
   const { login } = useAuth();
   const { setUserType } = useUser();
 
   const handleLogin = async () => {
+    if (!email || !password) {
+      setError("Por favor, preencha todos os campos.");
+      return;
+    }
+
     try {
+      setLoading(true);
+      setError("");
+      
       const response = await fetch('https://zedakombi-1.onrender.com/token', {
         method: 'POST',
         headers: {
@@ -28,6 +38,8 @@ export function LoginForm() {
       });
   
       if (!response.ok) {
+        const errorData = await response.json();
+        setError(errorData?.detail || "Email ou senha incorretos. Tente novamente.");
         throw new Error('Login failed');
       }
   
@@ -59,69 +71,142 @@ export function LoginForm() {
       }
     } catch (error) {
       console.error('Login error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleLogin();
     }
   };
 
   return (
-    <div className="bg-white p-8 sm:p-10 rounded-2xl shadow-xl max-w-md w-full text-center">
-      {/* Logo */}
-      <div className="flex items-center justify-center mb-6">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="32"
-          height="32"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth="2"
-          className="text-blue-600"
-        >
-          <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-        </svg>
-        <h1 className="ml-2 text-2xl font-bold text-blue-600">NexusR</h1>
-      </div>
-
-      <h1 className="text-2xl font-semibold mb-4">Bem-vindo à plataforma</h1>
-      <p className="text-gray-600 mb-6">
-        A ponte entre a pesquisa científica e o mundo empresarial, utilizando blockchain para promover inovação e colaboração.
-      </p>
-
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="w-full p-2 border rounded-lg mb-4"
-      />
-      <input
-        type="password"
-        placeholder="Senha"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        className="w-full p-2 border rounded-lg mb-4"
-      />
-
-      <Button
-        onClick={handleLogin}
-        className="w-full py-4 text-md font-medium flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
-      >
-        <Lock className="h-5 w-5" />
-        Conectar
-      </Button>
-
-      <p className="text-xs text-gray-500 mt-6">
-        Ao conectar, você concorda com nossos{" "}
-        <a href="#" className="text-blue-600 hover:underline">
-          Termos de Serviço
-        </a>
-      </p>
-
-      <p className="text-sm text-gray-600 mt-4">
-        Não tem uma conta?{" "}
-        <Link to="/signup" className="text-blue-600 hover:underline">
-          Cadastre-se
-        </Link>
-      </p>
+    <div className="bg-gradient-to-b from-slate-900 to-black text-white min-h-screen flex flex-col">
+      {/* Header */}
+      <header className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
+        <div className="flex justify-between items-center">
+          <Link to="/" className="flex items-center">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="32"
+              height="32"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth="2"
+              className="text-blue-500"
+            >
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+            </svg>
+            <h1 className="ml-2 text-2xl font-bold text-blue-500">NexusR</h1>
+          </Link>
+          
+          <div>
+            <Link to="/signup">
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                Cadastre-se
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </header>
+      
+      {/* Main Content */}
+      <main className="flex-grow flex items-center justify-center px-4 py-12">
+        <div className="bg-gray-900/60 p-8 sm:p-10 rounded-2xl border border-gray-800 shadow-xl max-w-md w-full">
+          <div className="text-center mb-8">
+            <div className="h-16 w-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+              <LogIn className="h-8 w-8 text-blue-500" />
+            </div>
+            <h1 className="text-2xl font-bold mb-2">Bem-vindo à plataforma</h1>
+            <p className="text-gray-400">
+              A ponte entre a pesquisa científica e o mundo empresarial, utilizando blockchain para promover inovação e colaboração.
+            </p>
+          </div>
+          
+          {error && (
+            <div className="bg-red-500/20 border border-red-600 text-red-200 px-4 py-3 rounded mb-6">
+              {error}
+            </div>
+          )}
+          
+          <div className="space-y-4">
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
+              <input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onKeyPress={handleKeyPress}
+                className="w-full p-3 pl-10 bg-gray-800/80 border border-gray-700 focus:border-blue-500 rounded-lg outline-none text-white"
+              />
+            </div>
+            
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
+              <input
+                type="password"
+                placeholder="Senha"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                onKeyPress={handleKeyPress}
+                className="w-full p-3 pl-10 bg-gray-800/80 border border-gray-700 focus:border-blue-500 rounded-lg outline-none text-white"
+              />
+            </div>
+            
+            <div className="flex justify-end">
+              <Link to="/forgot-password" className="text-sm text-blue-500 hover:underline">
+                Esqueceu sua senha?
+              </Link>
+            </div>
+          </div>
+          
+          <Button
+            onClick={handleLogin}
+            disabled={loading}
+            className="w-full py-4 mt-6 text-base font-medium flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
+          >
+            {loading ? (
+              "Conectando..."
+            ) : (
+              <>
+                Conectar
+                <ArrowRight className="h-5 w-5" />
+              </>
+            )}
+          </Button>
+          
+          <div className="mt-8 text-center">
+            <p className="text-gray-400">
+              Não tem uma conta?{" "}
+              <Link to="/signup" className="text-blue-500 hover:underline font-medium">
+                Cadastre-se
+              </Link>
+            </p>
+          </div>
+          
+          <p className="text-xs text-gray-500 mt-6 text-center">
+            Ao conectar, você concorda com nossos{" "}
+            <a href="#" className="text-blue-500 hover:underline">
+              Termos de Serviço
+            </a>{" "}
+            e{" "}
+            <a href="#" className="text-blue-500 hover:underline">
+              Política de Privacidade
+            </a>
+          </p>
+        </div>
+      </main>
+      
+      {/* Footer */}
+      <footer className="py-6 border-t border-gray-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-400 text-sm">
+          <p>© 2025 NexusR. Todos os direitos reservados.</p>
+        </div>
+      </footer>
     </div>
   );
 }
