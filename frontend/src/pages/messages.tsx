@@ -1,320 +1,461 @@
-import { useState, useEffect, useRef } from "react";
+// src/pages/messages.tsx
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Navbar } from "../components/ui/navbar";
 import { Button } from "../components/ui/button";
-import { Search, Send } from "lucide-react";
+import { Send, LogOut, Circle, Loader2, FileText } from "lucide-react";
 import { useAuth } from "../context/auth-context";
-import { useUser } from "../context/user-context";
-import io, { Socket } from 'socket.io-client'; // Importe o tipo Socket
+//import { useUser } from "../context/user-context";
+import { useNavigate } from "react-router-dom";
+import io, { Socket } from "socket.io-client";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { ContractButton } from "../components/contract-button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "../components/ui/dialog";
 
-// Criando instância de Socket.IO fora do componente para evitar múltiplas conexões
-let socket: Socket; // Defina o tipo da variável socket
+interface Message {
+  id: number;
+  sender: "me" | "them";
+  text: string;
+  time: string;
+  timestamp: Date;
+}
+
+interface BackendMessage {
+  id: number;
+  user_id: number;
+  message: string;
+  created_at: string;
+}
+
+interface UserInfo {
+  id: number;
+  name: string;
+}
+
+// Configurações da API
+const API_BASE_URL = "https://chat-tbvx.onrender.com";
+const SOCKET_URL = "https://chat-tbvx.onrender.com";
+const API_AUTH = "https://zedakombi-1.onrender.com";
+
+// Socket instance management
+const socketManager = {
+  socket: null as Socket | null,
+  initialize(userId: number, onMessage: (data: any) => void) {
+    if (this.socket) {
+      this.socket.disconnect();
+    }
+
+    this.socket = io(SOCKET_URL, {
+      withCredentials: true,
+      transports: ["websocket"],
+      reconnectionAttempts: 10,
+      reconnectionDelay: 3000,
+      autoConnect: true,
+    });
+
+    this.socket.on("connect", () => {
+      console.log("Socket connected, registering user:", userId);
+      this.socket?.emit("registerUser", userId);
+    });
+
+    this.socket.on("message", onMessage);
+
+    this.socket.on("disconnect", (reason) => {
+      console.log("Disconnected:", reason);
+    });
+
+    return this.socket;
+  },
+  disconnect() {
+    if (this.socket) {
+      this.socket.disconnect();
+      this.socket = null;
+    }
+  },
+  getSocket() {
+    return this.socket;
+  }
+};
 
 export default function MessagesPage() {
   const { token } = useAuth();
-  const { userType } = useUser();
-  const [activeContact, setActiveContact] = useState(0);
-  const [messages, setMessages] = useState<{ [key: number]: any[] }>({});
+  //const { userType } = useUser();
+  const navigate = useNavigate();
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isConnected, setIsConnected] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [isConnecting, setIsConnecting] = useState(true);
+  const [chatId, setChatId] = useState<number | null>(null);
+  const [targetUserName, setTargetUserName] = useState<string>("Usuário");
+  const [isTargetOnline, setIsTargetOnline] = useState<boolean>(false);
+  const [userId, setUserId] = useState<number | null>(null);
+  const [toUserId, setToUserId] = useState<number | null>(null);
+  const [isSending, setIsSending] = useState(false);
+  const [contractUrl, setContractUrl] = useState<string | null>(null);
+  const [showContractModal, setShowContractModal] = useState(false);
   
-  // Obtém o ID do usuário do localStorage 
-  const getUserId = () => {
-    return parseInt(localStorage.getItem('userId') || '1');
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const formatTime = (dateString: string | Date) => {
+    const date = typeof dateString === 'string' ? new Date(dateString) : dateString;
+    return format(date, 'HH:mm', { locale: ptBR });
   };
 
-  const userId = getUserId();
+  const handleNewMessage = useCallback((data: { fromUserId: number; message: string }) => {
+    console.log("New message received:", data);
+    
+    if (data.fromUserId !== userId) {
+      const newMsg: Message = {
+        id: Date.now(),
+        sender: "them",
+        text: data.message,
+        time: formatTime(new Date()),
+        timestamp: new Date(),
+      };
 
-  const contacts = [
-    { id: 2, name: "Ricardo Pereira", company: "ABC Inovações", avatar: "RP", unread: 2 },
-    { id: 3, name: "Ana Silva", company: "Tech Solutions", avatar: "AS", unread: 0 },
-    { id: 4, name: "Carlos Mendes", company: "Invest Capital", avatar: "CM", unread: 1 },
-    { id: 5, name: "Mariana Costa", company: "Green Energy", avatar: "MC", unread: 0 },
-  ];
-
-  // Inicializar a conexão socket quando o componente montar
-  useEffect(() => {
-    // Inicializar socket (apenas uma vez)
-    if (!socket) {
-      socket = io('http://localhost:3001', {
-        withCredentials: true,
-        transports: ['websocket'],
-        upgrade: false
-      });
+      setMessages((prev) => [...prev, newMsg]);
     }
+  }, [userId]);
 
-    // Verificação de autenticação
-    if (!token) {
-      console.error("Usuário não autenticado.");
-      return;
-    }
+  const initializeSocket = useCallback(() => {
+    if (!userId) return;
 
-    // Conectar socket
-    socket.on('connect', () => {
-      console.log('Socket conectado!');
+    const socket = socketManager.initialize(userId, handleNewMessage);
+
+    const onConnect = () => {
       setIsConnected(true);
-      
-      // Registrar usuário no socket
-      socket.emit('registerUser', userId);
-      console.log(`Registrando usuário: ${userId}`);
-    });
+      setIsConnecting(false);
+      socket?.emit("registerUser", userId);
+    };
 
-    socket.on('connect_error', (error) => {
-      console.error('Erro de conexão socket:', error);
+    const onDisconnect = () => {
       setIsConnected(false);
-    });
+      setIsConnecting(true);
+    };
 
-    // Cleanup na desmontagem do componente
+    socket?.on("connect", onConnect);
+    socket?.on("disconnect", onDisconnect);
+
     return () => {
-      // Apenas remover os listeners, não desconectar o socket
-      socket.off('connect');
-      socket.off('connect_error');
-      socket.off('message');
+      socket?.off("connect", onConnect);
+      socket?.off("disconnect", onDisconnect);
     };
-  }, [token, userId]);
+  }, [userId, handleNewMessage]);
 
-  // Configurar listener de mensagens
-  useEffect(() => {
-    if (!socket) return;
+  const fetchTargetUserName = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_AUTH}/usuarios`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data: UserInfo[] = await res.json();
+      const target = data.find((u) => u.id === toUserId);
+      if (target) setTargetUserName(target.name);
+    } catch (error) {
+      console.error("Failed to fetch user info:", error);
+    }
+  }, [token, toUserId]);
 
-    // Remover listener existente para evitar duplicação
-    socket.off('message');
-    
-    // Ouvir mensagens recebidas
-    socket.on('message', (data) => {
-      console.log("Mensagem recebida:", data);
+  const fetchMessages = useCallback(async (chatId: number) => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/chats/${chatId}/messages`);
+      const data: BackendMessage[] = await res.json();
+
+      const formatted = data.map((msg) => ({
+        id: msg.id,
+        sender: (msg.user_id === userId ? "me" : "them") as "me" | "them",
+        text: msg.message,
+        time: formatTime(msg.created_at),
+        timestamp: new Date(msg.created_at),
+      }));
+
+      setMessages(formatted);
+    } catch (error) {
+      console.error("Failed to fetch messages:", error);
+    }
+  }, [userId]);
+
+  const initializeChat = useCallback(async () => {
+    if (!userId || !toUserId) return;
+
+    try {
+      setIsConnecting(true);
       
-      if (data.message) {
-        // Se for mensagem de sucesso do registro do usuário, ignore
-        if (data.message.includes('registrado com sucesso')) {
-          return;
-        }
-        
-        // Determinar o ID do contato baseado em quem enviou a mensagem
-        const contactId = data.fromUserId === userId ? 
-          data.toUserId : // Se eu enviei, associe ao destinatário
-          data.fromUserId; // Se recebi, associe ao remetente
-        
-        // Encontrar o índice do contato na lista
-        const contactIndex = contacts.findIndex(c => c.id === contactId);
-        if (contactIndex === -1) return; // Contato não encontrado
-        
-        const newMessage = {
-          id: Date.now(),
-          sender: data.fromUserId === userId ? "me" : "them",
-          text: data.message,
-          time: new Date().toLocaleTimeString(),
-        };
+      const chatKey = `chat_${userId}_${toUserId}`;
+      let id = localStorage.getItem(chatKey);
 
-        setMessages(prevMessages => {
-          // Clonar o objeto de mensagens para não modificar o estado diretamente
-          const updatedMessages = {...prevMessages};
-          
-          // Inicializar o array para este contato se não existir
-          if (!updatedMessages[contactIndex]) {
-            updatedMessages[contactIndex] = [];
-          }
-          
-          // Adicionar a nova mensagem
-          updatedMessages[contactIndex] = [
-            ...(updatedMessages[contactIndex] || []),
-            newMessage
-          ];
-          
-          return updatedMessages;
+      if (!id) {
+        const res = await fetch(`${API_BASE_URL}/chats/create`, {
+          method: "POST",
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ userId, toUserId })
         });
+        const data = await res.json();
+        id = data.chatId.toString();
+        if (id !== null) {
+          localStorage.setItem(chatKey, id);
+        }
       }
-    });
-  }, [userId, contacts]);
 
-  // Carregar mensagens anteriores
+      const chatNum = parseInt(id || '0');
+      setChatId(chatNum);
+      
+      await Promise.all([
+        fetchMessages(chatNum),
+        fetchTargetUserName(),
+      ]);
+
+      initializeSocket();
+    } catch (error) {
+      console.error("Chat initialization error:", error);
+      setIsConnecting(false);
+    }
+  }, [userId, toUserId, fetchMessages, fetchTargetUserName, initializeSocket, token]);
+
   useEffect(() => {
-    // Simulação de carregar mensagens anteriores
-    // Em uma implementação real, você faria uma requisição ao backend
-    const mockMessages = {
-      0: [
-        {
-          id: 1,
-          sender: "them",
-          text: "Olá! Estou interessado no seu projeto.",
-          time: "10:30"
-        },
-        {
-          id: 2,
-          sender: "me",
-          text: "Ótimo! Podemos marcar uma reunião para discutir os detalhes.",
-          time: "10:32"
-        }
-      ],
-      1: [
-        {
-          id: 3,
-          sender: "them",
-          text: "Bom dia! Vi seu artigo sobre energias renováveis.",
-          time: "09:15"
-        }
-      ]
-    };
-    
-    // Definir as mensagens mock apenas se não houver mensagens
-    setMessages(prevMessages => {
-      if (Object.keys(prevMessages).length === 0) {
-        return mockMessages;
-      }
-      return prevMessages;
-    });
+    const storedUserId = parseInt(localStorage.getItem("userId") || "0");
+    const storedToUserId = parseInt(localStorage.getItem("targetUserId") || "0");
+    if (storedUserId && storedToUserId) {
+      setUserId(storedUserId);
+      setToUserId(storedToUserId);
+    }
   }, []);
 
-  // Scrollar para a última mensagem quando novas mensagens chegarem
+  useEffect(() => {
+    if (userId && toUserId) {
+      initializeChat();
+    }
+
+    return () => {
+      const socket = socketManager.getSocket();
+      socket?.off("connect");
+      socket?.off("disconnect");
+      socketManager.disconnect();
+    };
+  }, [userId, toUserId, initializeChat]);
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, activeContact]);
+  }, [messages]);
 
-  const sendMessage = () => {
-    if (inputMessage.trim() && isConnected) {
-      const targetUserId = contacts[activeContact].id;
-      
-      console.log(`Enviando mensagem para usuário ${targetUserId}`);
-      
-      // Formato correto para enviar mensagem via socket
-      socket.emit('sendMessage', {
-        chatId: 2, // Chat ID fixo
+  useEffect(() => {
+    const onlineInterval = setInterval(() => {
+      const socket = socketManager.getSocket();
+      setIsTargetOnline(!!socket?.connected);
+    }, 3000);
+    return () => clearInterval(onlineInterval);
+  }, []);
+
+  const sendMessage = async () => {
+    const socket = socketManager.getSocket();
+    if (!inputMessage.trim() || !chatId || !toUserId || !userId || !socket) return;
+
+    try {
+      setIsSending(true);
+      const messageData = {
+        chatId,
         fromUserId: userId,
-        toUserId: targetUserId,
-        message: inputMessage
-      });
+        toUserId,
+        message: inputMessage,
+      };
 
-      // Não precisamos adicionar manualmente ao estado, pois o evento 'message' será disparado
+      socket.emit("sendMessage", messageData);
 
+      const newMessage: Message = {
+        id: Date.now(),
+        sender: "me",
+        text: inputMessage,
+        time: formatTime(new Date()),
+        timestamp: new Date(),
+      };
+
+      setMessages((prev) => [...prev, newMessage]);
       setInputMessage("");
+      inputRef.current?.focus();
+    } catch (error) {
+      console.error("Failed to send message:", error);
+    } finally {
+      setIsSending(false);
     }
   };
 
-  // Handler para envio com Enter
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
+  const handleLeaveChat = () => {
+    localStorage.removeItem("targetUserId");
+    navigate("/list");
   };
+
+  const handleContractGenerated = (url: string) => {
+    setContractUrl(url);
+    setShowContractModal(true);
+  };
+
+  const groupedMessages = messages.reduce((acc, message) => {
+    const date = format(message.timestamp, 'PPP', { locale: ptBR });
+    if (!acc[date]) {
+      acc[date] = [];
+    }
+    acc[date].push(message);
+    return acc;
+  }, {} as Record<string, Message[]>);
 
   return (
     <>
       <Navbar />
-      <main className="max-w-6xl mx-auto px-4 py-6">
-        <div className="mb-6">
-          <h1 className="text-2xl font-semibold mb-2">Mensagens</h1>
-          <p className="text-secondary">Converse com empresários e pesquisadores</p>
-          {!isConnected && (
-            <p className="text-red-500 text-sm mt-1">
-              Não conectado ao servidor de chat. Tentando reconectar...
-            </p>
-          )}
+      <main className="max-w-4xl mx-auto px-4 py-6 h-[calc(100vh-80px)] flex flex-col">
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex items-center gap-2">
+            <h2 className="text-xl font-bold">{targetUserName}</h2>
+            <div className="flex items-center gap-1">
+              <Circle
+                className={`h-3 w-3 ${
+                  isTargetOnline ? "text-green-500" : "text-gray-400"
+                }`}
+                fill={isTargetOnline ? "#22c55e" : "#9ca3af"}
+              />
+              <span className="text-sm text-gray-500">
+                {isTargetOnline ? "Online" : "Offline"}
+              </span>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <ContractButton 
+              chatId={chatId || 0} 
+              onContractGenerated={handleContractGenerated}
+              disabled={!isConnected || isConnecting}
+            />
+            <Button variant="outline" onClick={handleLeaveChat}>
+              <LogOut className="w-4 h-4 mr-2" /> Sair
+            </Button>
+          </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-md overflow-hidden">
-          <div className="flex h-[80vh]">
-            {/* Sidebar de contatos */}
-            <div className="w-80 border-r bg-muted/30 overflow-y-auto">
-              <div className="p-4 border-b">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-secondary" />
-                  <input
-                    type="text"
-                    placeholder="Buscar contatos..."
-                    className="w-full pl-9 pr-4 py-2 border border-input rounded-lg bg-white"
-                  />
-                </div>
-              </div>
-
-              {contacts.map((contact, index) => (
-                <div
-                  key={contact.id}
-                  className={`flex items-center gap-3 px-4 py-3 cursor-pointer border-b hover:bg-muted/50 ${
-                    activeContact === index ? "bg-muted" : ""
-                  }`}
-                  onClick={() => setActiveContact(index)}
-                >
-                  <div className="avatar-sm">{contact.avatar}</div>
-                  <div className="flex-1 min-w-0">
-                    <div className="font-medium truncate">{contact.name}</div>
-                    <div className="text-sm text-secondary truncate">{contact.company}</div>
+        {isConnecting ? (
+          <div className="flex-1 flex flex-col items-center justify-center gap-2">
+            <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+            <p className="text-gray-500">Conectando ao chat...</p>
+          </div>
+        ) : (
+          <div className="bg-white border rounded-xl shadow flex flex-col flex-1">
+            <div className="flex-1 overflow-y-auto p-4 space-y-6">
+              {Object.entries(groupedMessages).map(([date, dateMessages]) => (
+                <div key={date} className="space-y-4">
+                  <div className="text-center">
+                    <span className="text-xs bg-gray-100 px-2 py-1 rounded-full text-gray-500">
+                      {date}
+                    </span>
                   </div>
-                  {contact.unread > 0 && (
-                    <div className="h-5 w-5 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center">
-                      {contact.unread}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-
-            {/* Área do chat */}
-            <div className="flex-1 flex flex-col bg-white">
-              {/* Header do chat */}
-              <div className="p-4 border-b flex items-center gap-3 bg-muted/10">
-                {activeContact >= 0 && contacts[activeContact] && (
-                  <>
-                    <div className="avatar-sm">{contacts[activeContact]?.avatar}</div>
-                    <div>
-                      <div className="font-medium">{contacts[activeContact]?.name}</div>
-                      <div className="text-sm text-secondary">{contacts[activeContact]?.company}</div>
-                    </div>
-                  </>
-                )}
-              </div>
-
-              {/* Mensagens */}
-              <div className="flex-1 p-4 overflow-y-auto flex flex-col gap-4">
-                {messages[activeContact]?.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`max-w-[70%] p-3 rounded-2xl text-sm ${
-                      message.sender === "me"
-                        ? "bg-blue-600 text-white self-end"
-                        : "bg-gray-100 text-gray-900 self-start"
-                    }`}
-                  >
-                    <p>{message.text}</p>
+                  {dateMessages.map((m) => (
                     <div
-                      className={`text-xs mt-1 text-right ${
-                        message.sender === "me" ? "text-white/70" : "text-gray-500"
+                      key={m.id}
+                      className={`flex ${
+                        m.sender === "me" ? "justify-end" : "justify-start"
                       }`}
                     >
-                      {message.time}
+                      <div
+                        className={`max-w-[80%] p-3 rounded-xl text-sm ${
+                          m.sender === "me"
+                            ? "bg-blue-600 text-white"
+                            : "bg-gray-100 text-gray-900"
+                        }`}
+                      >
+                        <p className="break-words">{m.text}</p>
+                        <div
+                          className={`text-xs mt-1 ${
+                            m.sender === "me"
+                              ? "text-blue-100 text-right"
+                              : "text-gray-500"
+                          }`}
+                        >
+                          {m.time}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                ))}
-                <div ref={messagesEndRef} />
-              </div>
+                  ))}
+                </div>
+              ))}
+              <div ref={messagesEndRef} />
+            </div>
 
-              {/* Campo de nova mensagem e botão de negociação */}
-              <div className="p-4 border-t flex gap-2 bg-muted/10">
+            <div className="p-3 border-t">
+              {!isConnected && (
+                <div className="text-sm text-red-500 mb-2 flex items-center gap-1">
+                  <Circle className="h-3 w-3" fill="#ef4444" />
+                  Conexão perdida. Tentando reconectar...
+                </div>
+              )}
+              <div className="flex gap-2">
                 <input
-                  type="text"
-                  placeholder="Digite sua mensagem..."
-                  className="flex-1 px-4 py-3 border border-input rounded-full focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  ref={inputRef}
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
-                  onKeyDown={handleKeyDown}
+                  placeholder="Digite sua mensagem..."
+                  className="flex-1 px-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      sendMessage();
+                    }
+                  }}
+                  disabled={!isConnected}
                 />
-                {/* Exibe o botão de "Negociação" apenas para empresários */}
-                {userType === "empresario" && (
-                  <Button variant="outline" className="rounded-full">
-                    Negociação
-                  </Button>
-                )}
-                <Button 
-                  className="rounded-full h-12 w-12 p-0 bg-blue-600 text-white" 
+                <Button
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
                   onClick={sendMessage}
-                  disabled={!inputMessage.trim() || !isConnected}
+                  disabled={!inputMessage.trim() || !isConnected || isSending}
                 >
-                  <Send className="h-5 w-5" />
+                  {isSending ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                  ) : (
+                    <Send className="h-5 w-5" />
+                  )}
                 </Button>
               </div>
             </div>
           </div>
-        </div>
+        )}
+
+        {/* Modal para visualização do contrato */}
+        <Dialog open={showContractModal} onOpenChange={setShowContractModal}>
+          <DialogContent className="fixed left-1/2 top-1/2 z-50 w-full max-w-4xl -translate-x-1/2 -translate-y-1/2 transform rounded-lg bg-white p-6 shadow-lg">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-bold">Contrato Gerado</DialogTitle>
+            </DialogHeader>
+            <div className="mt-4 h-[70vh] flex flex-col">
+              {contractUrl ? (
+                <>
+                  <iframe 
+                    src={contractUrl} 
+                    className="flex-1 w-full border rounded-lg"
+                    title="Visualização do Contrato"
+                  />
+                  <div className="flex justify-end gap-2 mt-4">
+                    <Button variant="outline" onClick={() => setShowContractModal(false)}>
+                      Fechar
+                    </Button>
+                    <a href={contractUrl} download>
+                      <Button>
+                        <FileText className="mr-2 h-4 w-4" />
+                        Baixar Contrato
+                      </Button>
+                    </a>
+                  </div>
+                </>
+              ) : (
+                <div className="flex-1 flex items-center justify-center">
+                  <Loader2 className="h-8 w-8 animate-spin" />
+                </div>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
       </main>
     </>
   );

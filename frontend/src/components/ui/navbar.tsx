@@ -18,28 +18,26 @@ export function Navbar() {
   const location = useLocation();
   const { userType } = useUser();
 
-
   const [isArticleDropdownOpen, setArticleDropdownOpen] = useState(false);
 
-  console.log('UserType na Navbar:', userType);
-
+  console.log('UserType in Navbar:', userType);
 
   const researcherLinks = [
-    { href: "/feed-pesquisador", label: "Feed", icon: Home },
-    { href: "/messages", label: "Mensagens", icon: MessageSquare },
-    { href: "/transactions", label: "Transações", icon: Wallet },
-    { href: "/profile", label: "Perfil", icon: User },
+    { href: "/researcher-feed", label: "Feed", icon: Home },
+    { href: "/list", label: "Messages", icon: MessageSquare },
+    { href: "/transactions", label: "Transactions", icon: Wallet },
+    { href: "/profile", label: "Profile", icon: User },
   ];
 
   const entrepreneurLinks = [
-    { href: "/feed-empresarios", label: "Feed", icon: Home },
-    { href: "/research", label: "Pesquisadores", icon: Users },
-    { href: "/transactions", label: "Transações", icon: Wallet },
-    { href: "/messages", label: "Mensagens", icon: BarChart },
-    { href: "/profile", label: "Perfil", icon: User },
+    { href: "/entrepreneur-feed", label: "Feed", icon: Home },
+    { href: "/researchers", label: "Researchers", icon: Users },
+    { href: "/transactions", label: "Transactions", icon: Wallet },
+    { href: "/list", label: "Messages", icon: BarChart },
+    { href: "/profile", label: "Profile", icon: User },
   ];
 
-  const links = userType === "empresario" ? entrepreneurLinks : researcherLinks;
+  const links = userType === "entrepreneur" ? entrepreneurLinks : researcherLinks;
 
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -56,7 +54,6 @@ export function Navbar() {
     }, 200);
   };
 
-
   return (
     <header className="sticky top-0 z-10 bg-white shadow-sm">
       <div className="container mx-auto px-4">
@@ -66,7 +63,7 @@ export function Navbar() {
             <span>NexusR</span>
             {userType && (
               <span className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full ml-2 capitalize">
-                {userType === "pesquisador" ? "pesquisador" : "Empresário"}
+                {userType === "researcher" ? "Researcher" : "Entrepreneur"}
               </span>
             )}
           </div>
@@ -86,8 +83,8 @@ export function Navbar() {
               </Link>
             ))}
 
-            {/* Artigos Dropdown com atraso */}
-            {userType === "pesquisador" && (
+            {/* Articles Dropdown with delay */}
+            {userType === "researcher" && (
               <div
                 className="relative"
                 onMouseEnter={handleMouseEnter}
@@ -100,7 +97,7 @@ export function Navbar() {
                   )}
                 >
                   <FileText className="h-5 w-5" />
-                  <span className="hidden md:inline">Artigos</span>
+                  <span className="hidden md:inline">Articles</span>
                   <ChevronDown className="h-4 w-4" />
                 </button>
 
@@ -110,19 +107,18 @@ export function Navbar() {
                       to="/create-post"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
                     >
-                      Feed de Artigos
+                      Article Feed
                     </Link>
                     <Link
                       to="/submit"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
                     >
-                      Submeter Artigo
+                      Submit Article
                     </Link>
                   </div>
                 )}
               </div>
             )}
-
           </div>
         </nav>
       </div>

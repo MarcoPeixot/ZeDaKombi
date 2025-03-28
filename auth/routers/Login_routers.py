@@ -107,6 +107,12 @@ async def login_for_access_token(
         "role": user.role.value
     }
 
+@router.get("/usuarios")
+async def listar_usuarios(db: Session = Depends(get_db)):
+    usuarios = db.query(User).all()
+    return [{"id": u.id, "name": u.name, "email": u.email, "role": u.role} for u in usuarios]
+
+
 @router.post("/solicitar-redefinicao-senha")
 async def solicitar_redefinicao_senha(
     request: PasswordResetRequest,

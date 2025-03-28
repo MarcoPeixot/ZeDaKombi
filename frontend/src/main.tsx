@@ -6,8 +6,8 @@ import { UserProvider } from "./context/user-context";
 import { AuthProvider } from './context/auth-context';
 import LoginPage from "./pages/login";
 import { SignupForm } from "./components/SignupForm";
-import FeedPesquisador from "./pages/feed_pesquisador";
-import FeedEmpresarios from "./pages/feed_empresarios";
+import ResearcherFeed from "./pages/feed_pesquisador";
+import EntrepreneurFeed from "./pages/feed_empresarios";
 import SubmitArticlePage from "./pages/articles/submit";
 import CreatePostPage from "./pages/articles/create-post";
 import TransactionsPage from "./pages/transactions";
@@ -18,6 +18,13 @@ import EditEntrepreneurProfilePage from "./pages/profile/edit/entrepreneur";
 import EditResearcherProfilePage from "./pages/profile/edit/research";
 import IPFSViewerPage from "./pages/ipfs-view";
 import { ProtectedRoute } from "./components/ProtectRoutes";
+import RegistroSucesso from "../src/pages/RegistroSucesso";
+//import { NearProvider } from "./context/NearContext";
+
+if (typeof global === "undefined") {
+  (window as any).global = window;
+}
+import UserListPage from "./pages/list";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -28,13 +35,15 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
             <Route path="/" element={<LoginPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupForm />} />
-
+            <Route path="/registro-sucesso" element={<RegistroSucesso />} />
             {/* Rotas protegidas */}
+
+            {/* Protected Routes */}
             <Route
-              path="/feed-pesquisador"
+              path="/researcher-feed"
               element={
                 <ProtectedRoute requiredRole="pesquisador">
-                  <FeedPesquisador />
+                  <ResearcherFeed />
                 </ProtectedRoute>
               }
             />
@@ -71,10 +80,18 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
               }
             />
             <Route
-              path="/feed-empresarios"
+              path="/list"
+              element={
+                <ProtectedRoute>
+                  <UserListPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/entrepreneur-feed"
               element={
                 <ProtectedRoute requiredRole="empresario">
-                  <FeedEmpresarios />
+                  <EntrepreneurFeed />
                 </ProtectedRoute>
               }
             />

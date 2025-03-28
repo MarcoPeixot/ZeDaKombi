@@ -1,4 +1,3 @@
-import React from "react";
 import { Navbar } from "../components/ui/navbar";
 import { Button } from "../components/ui/button";
 import { Download, ExternalLink, FileText, Share2 } from "lucide-react";
