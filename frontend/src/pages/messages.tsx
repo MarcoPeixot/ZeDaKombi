@@ -4,7 +4,7 @@ import { Navbar } from "../components/ui/navbar";
 import { Button } from "../components/ui/button";
 import { Send, LogOut, Circle, Loader2, FileText } from "lucide-react";
 import { useAuth } from "../context/auth-context";
-import { useUser } from "../context/user-context";
+//import { useUser } from "../context/user-context";
 import { useNavigate } from "react-router-dom";
 import io, { Socket } from "socket.io-client";
 import { format } from "date-fns";
@@ -84,7 +84,7 @@ const socketManager = {
 
 export default function MessagesPage() {
   const { token } = useAuth();
-  const { userType } = useUser();
+  //const { userType } = useUser();
   const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
@@ -168,7 +168,7 @@ export default function MessagesPage() {
 
       const formatted = data.map((msg) => ({
         id: msg.id,
-        sender: msg.user_id === userId ? "me" : "them",
+        sender: (msg.user_id === userId ? "me" : "them") as "me" | "them",
         text: msg.message,
         time: formatTime(msg.created_at),
         timestamp: new Date(msg.created_at),
@@ -200,7 +200,9 @@ export default function MessagesPage() {
         });
         const data = await res.json();
         id = data.chatId.toString();
-        localStorage.setItem(chatKey, id);
+        if (id !== null) {
+          localStorage.setItem(chatKey, id);
+        }
       }
 
       const chatNum = parseInt(id || '0');

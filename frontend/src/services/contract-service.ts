@@ -29,15 +29,15 @@ export interface ContractData {
   export async function generateContract(chatId: number): Promise<{ pdfUrl: string }> {
     // Substitua por uma chamada real à sua API quando estiver pronta
     // Exemplo:
-    // const response = await fetch(`/api/contracts/generate`, {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     'Authorization': `Bearer ${token}`
-    //   },
-    //   body: JSON.stringify({ chatId })
-    // });
-    // return await response.json();
+    const response = await fetch(`/api/contracts/generate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        //'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ chatId })
+    });
+    return await response.json();
   
     // Simulação enquanto a API não está pronta
     return new Promise((resolve) => {

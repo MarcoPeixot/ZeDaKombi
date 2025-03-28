@@ -4,8 +4,8 @@ import {
   WalletSelector,
   Wallet,
 } from "@near-wallet-selector/core";
-import { setupModal } from "@near-wallet-selector/modal-ui";
-import myNearWallet from "@near-wallet-selector/my-near-wallet";
+//import { setupModal } from "@near-wallet-selector/modal-ui";
+import { setupMyNearWallet } from "@near-wallet-selector/my-near-wallet";
 
 interface NearContextType {
   selector: WalletSelector | null;
@@ -25,12 +25,12 @@ export const NearProvider = ({ children }: { children: React.ReactNode }) => {
     const init = async () => {
       const selector = await setupWalletSelector({
         network: "testnet",
-        modules: [myNearWallet()],
+        modules: [setupMyNearWallet()],
       });
 
-      const modal = setupModal(selector, {
-        contractId: "contrato_near.giovanna-britto.testnet",
-      });
+      // const modal = setupModal(selector, {
+      //   contractId: "contrato_near.giovanna-britto.testnet",
+      // });
 
       setSelector(selector);
 
