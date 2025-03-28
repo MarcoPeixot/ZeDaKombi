@@ -6,7 +6,7 @@ export default function RegistroSucesso() {
   const navigate = useNavigate();
   const [zecWallet, setZecWallet] = useState("");
   const [isSaving, setIsSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [_saved, setSaved] = useState(false);
 
   // O accountId pode ser recebido via query string ou pelo localStorage
   const accountId = new URL(window.location.href).searchParams.get("accountId") || localStorage.getItem("near_wallet");

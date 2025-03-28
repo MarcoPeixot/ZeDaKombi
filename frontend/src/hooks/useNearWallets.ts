@@ -16,9 +16,9 @@ export function useNearWallet() {
         modules: [setupMyNearWallet()],
       });
 
-      const modal = setupModal(selector, {
-        contractId: "contrato_near.giovanna-britto.testnet",
-      });
+      // const modal = setupModal(selector, {
+      //   contractId: "contrato_near.giovanna-britto.testnet",
+      // });
 
       setSelector(selector);
 

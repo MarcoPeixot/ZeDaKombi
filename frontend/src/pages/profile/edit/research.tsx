@@ -1,9 +1,9 @@
-import React, { useEffect } from "react";
 import { Navbar } from "../../../components/ui/navbar";
 import { Button } from "../../../components/ui/button";
 import { ArrowLeft, Plus, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../../context/user-context";
+import { useEffect } from "react";
 
 
 export default function EditResearcherProfilePage() {
