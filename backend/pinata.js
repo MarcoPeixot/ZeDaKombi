@@ -16,7 +16,7 @@ async function uploadToIPFS(filePath) {
   });
 
   const cid = res.data.IpfsHash;
-  return `https://gateway.pinata.cloud/ipfs/${cid}`;
+  return `https://gateway.pinata.cloud/ipfs`;
 }
 
 module.exports = { uploadToIPFS };

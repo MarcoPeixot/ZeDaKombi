@@ -168,6 +168,25 @@ async def redefinir_senha(
 
     return {"message": "Senha redefinida com sucesso"}
 
+@router.get("/usuarios/{user_id}")
+async def get_user_by_id(user_id: int, db: Session = Depends(get_db)):
+    """Obtém um usuário pelo ID"""
+    user = db.query(User).filter(User.id == user_id).first()
+    
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Usuário não encontrado"
+        )
+    
+    return {
+        "id": user.id,
+        "name": user.name,
+        "email": user.email,
+        "role": user.role.value
+    }
+
+
 from pydantic import BaseModel
 
 class CarteiraUpdate(BaseModel):
