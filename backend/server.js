@@ -3,12 +3,16 @@ const express = require("express");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+const cors = require("cors");
 
 const { uploadToIPFS } = require("./pinata");
 const { salvarNaBlockchain, chamarMetodoView } = require("./near");
 
 const app = express();
 const upload = multer({ dest: "artigos/" });
+
+app.use(cors());
+
 
 app.use(express.json());
 
